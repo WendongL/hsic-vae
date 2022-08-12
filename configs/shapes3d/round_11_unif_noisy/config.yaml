@@ -1,0 +1,13 @@
+
+dataset: [shapes3d]
+model_type: [almost_uniform_mix_labels, noisy_labels]
+
+probe:
+  data_fraction: [1.0]
+  # noise_std_mult: [0.04]
+  # hidden_dim: [0, 14, 21, 24, 28, 30, 33, 47, 75, 103, 131,  243, 467, 915] # , 1811, 3603]
+  # hidden_dim: [0, 14, 21, 24, 28, 30, 33, 47, 75, 103, 131,  243, 467, 915 , 1811, 3603]
+  hidden_dim: [0]
+
+  num_hidden_layers: [2]
+  lr: [0.002, 0.02, 0.2, 2.0]

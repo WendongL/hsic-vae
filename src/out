@@ -1,0 +1,12 @@
+
+out dir: ./results/2022Aug09-145849_default/0000_default/0
+Global seed set to 0
+self._dataset_images:shape (240000, 1, 64, 64)
+self._dataset_images:shape (497280, 1, 64, 64)
+self._dataset_images:shape (497280, 1, 64, 64)
+Missing logger folder: ./results/2022Aug09-145849_default/0000_default/0/BetaVAE
+GPU available: True, used: True
+TPU available: False, using: 0 TPU cores
+IPU available: False, using: 0 IPUs
+======= Training BetaVAE =======
+hsic_score tensor(0.0020, device='cuda:0')

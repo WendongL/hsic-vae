@@ -1,0 +1,19 @@
+
+dataset: [cars3d]
+model_type: [resnet18]
+
+probe:
+  epochs: [100]
+  data_fraction: [1.0]
+  # hidden_dim: [0, 14, 21, 28, 33, 47, 75, 103, 131,  243, 467, 915 , 1811, 3603]
+  # hidden_dim: [0, 191, 197, 209, 233, 281, 377, 569, 953, 1721, 3257]
+  hidden_dim: [1721, 3257]
+
+
+  # weight_decay: [0.0]
+  # use_norm: [False]
+  # use_dropout: [False]
+  num_hidden_layers: [2]
+  # lr: [0.0002, 0.0001, 0.000001]
+  # lr: [0.001, 0.0001, 0.000001]
+  lr: [0.0002]

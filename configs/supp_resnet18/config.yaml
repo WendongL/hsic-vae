@@ -1,0 +1,4 @@
+model_type: [resnet18]
+dataset: [mpi3d]
+model.lr: [0.001, 0.0001]
+model.batch_size: [32, 64, 256]

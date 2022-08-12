@@ -1,0 +1,10 @@
+
+dataset: [cars3d]
+# model_type: [raw_data, noisy_labels, almost_uniform_mix_labels, resnet18, vae ]
+model_type: [raw_data]
+
+probe:
+  # noise_std_mult: [0.04]
+  data_fraction: [1.0]
+  type: [tree_ens_rf]
+  max_depth: [1, 2, 3, 4, 8, 10, 12, 14, 16, 18, 20, 32, 64, 128]

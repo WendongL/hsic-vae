@@ -1,0 +1,17 @@
+
+dataset: [cars3d]
+model_type: [raw_data]
+
+probe:
+  epochs: [100]
+  data_fraction: [1.0]
+  # hidden_dim: [0, 14, 21, 28, 33, 47, 75, 103, 131,  243, 467, 915 , 1811, 3603]
+  hidden_dim: [185, 220]
+
+
+  num_hidden_layers: [2]
+  lr: [ 0.00002]
+  # use_dropout: [False]
+  # use_norm: [False]
+  # weight_decay: [0.0]
+

@@ -1,0 +1,15 @@
+
+dataset: [shapes3d]
+model_type: [resnet18]
+
+probe:
+  epochs: [500]
+  data_fraction: [1.0]
+  # noise_std_mult: [0.04]
+  # hidden_dim: [0, 14, 21, 24, 28, 30, 33, 47, 75, 103, 131,  243, 467, 915] # , 1811, 3603]
+  # hidden_dim: [0, 14, 21, 28, 33, 47, 75, 103, 131,  243, 467, 915 , 1811, 3603]
+  hidden_dim: [0, 33, 131, 915]
+
+
+  num_hidden_layers: [2]
+  lr: [0.001, 0.0004, 0.0002, 0.0001]

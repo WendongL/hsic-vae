@@ -1,0 +1,12 @@
+
+dataset: [shapes3d]
+vae: 
+  exp_params:
+    # kld_weight: [0.01, 0.1, 1.0, 10, 100]
+    kld_weight: [0.0, 1.0, 100]
+
+model_type: [vae]
+
+probe:
+  hidden_dim: [0, 14, 21, 28, 33, 47, 75, 103, 131,  243, 467, 915, 1811, 3603]
+  lr: [0.0002]

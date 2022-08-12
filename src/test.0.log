@@ -1,0 +1,404 @@
+000 (12232628.000.000) 08/09 10:07:04 Job submitted from host: <10.15.2.1:9618?PrivAddr=%3c172.22.0.101:9618%3fsock%3d2748_7a58_3%3e&PrivNet=internal.cluster.is.localnet&addrs=10.15.2.1-9618&noUDP&sock=2748_7a58_3>
+...
+001 (12232628.000.000) 08/09 10:07:09 Job executing on host: <172.22.2.18:9618?addrs=172.22.2.18-9618&noUDP&sock=6229_2784_3>
+...
+005 (12232628.000.000) 08/09 10:07:14 Job terminated.
+	(1) Normal termination (return value 1)
+		Usr 0 00:00:02, Sys 0 00:00:00  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+		Usr 0 00:00:02, Sys 0 00:00:00  -  Total Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Local Usage
+	0  -  Run Bytes Sent By Job
+	0  -  Run Bytes Received By Job
+	0  -  Total Bytes Sent By Job
+	0  -  Total Bytes Received By Job
+...
+000 (12232630.000.000) 08/09 10:10:53 Job submitted from host: <10.15.2.1:9618?PrivAddr=%3c172.22.0.101:9618%3fsock%3d2748_7a58_3%3e&PrivNet=internal.cluster.is.localnet&addrs=10.15.2.1-9618&noUDP&sock=2748_7a58_3>
+...
+001 (12232630.000.000) 08/09 10:10:57 Job executing on host: <172.22.2.18:9618?addrs=172.22.2.18-9618&noUDP&sock=6229_2784_3>
+...
+006 (12232630.000.000) 08/09 10:11:07 Image size of job updated: 1661796
+	93  -  MemoryUsage of job (MB)
+	95092  -  ResidentSetSize of job (KB)
+...
+007 (12232630.000.000) 08/09 10:11:13 Shadow exception!
+	UserLog Unable to log ULOG_JOB_TERMINATED event
+	0  -  Run Bytes Sent By Job
+	0  -  Run Bytes Received By Job
+...
+005 (12232630.000.000) 08/09 10:11:13 Job terminated.
+	(1) Normal termination (return value 2)
+		Usr 0 00:00:03, Sys 0 00:00:02  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+		Usr 0 00:00:03, Sys 0 00:00:02  -  Total Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Local Usage
+	0  -  Run Bytes Sent By Job
+	0  -  Run Bytes Received By Job
+	0  -  Total Bytes Sent By Job
+	0  -  Total Bytes Received By Job
+...
+000 (12232633.000.000) 08/09 10:19:04 Job submitted from host: <10.15.2.1:9618?PrivAddr=%3c172.22.0.101:9618%3fsock%3d2748_7a58_3%3e&PrivNet=internal.cluster.is.localnet&addrs=10.15.2.1-9618&noUDP&sock=2748_7a58_3>
+...
+001 (12232633.000.000) 08/09 10:19:08 Job executing on host: <172.22.2.18:9618?addrs=172.22.2.18-9618&noUDP&sock=6229_2784_3>
+...
+006 (12232633.000.000) 08/09 10:19:14 Image size of job updated: 1653548
+	1  -  MemoryUsage of job (MB)
+	12  -  ResidentSetSize of job (KB)
+...
+005 (12232633.000.000) 08/09 10:19:29 Job terminated.
+	(1) Normal termination (return value 0)
+		Usr 0 00:00:02, Sys 0 00:00:01  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+		Usr 0 00:00:02, Sys 0 00:00:01  -  Total Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Local Usage
+	0  -  Run Bytes Sent By Job
+	0  -  Run Bytes Received By Job
+	0  -  Total Bytes Sent By Job
+	0  -  Total Bytes Received By Job
+	Partitionable Resources :    Usage  Request Allocated Assigned
+	   Cpus                 :     1.00        4         4 
+	   Disk (KB)            :     1           1    870290 
+	   Gpus                 :                 1         1 "CUDA1"
+	   Memory (MB)          :     1       32000     32000 
+...
+000 (12232638.000.000) 08/09 10:27:43 Job submitted from host: <10.15.2.1:9618?PrivAddr=%3c172.22.0.101:9618%3fsock%3d2748_7a58_3%3e&PrivNet=internal.cluster.is.localnet&addrs=10.15.2.1-9618&noUDP&sock=2748_7a58_3>
+...
+001 (12232638.000.000) 08/09 10:27:48 Job executing on host: <172.22.2.18:9618?addrs=172.22.2.18-9618&noUDP&sock=6229_2784_3>
+...
+006 (12232638.000.000) 08/09 10:27:57 Image size of job updated: 1154740
+	1128  -  MemoryUsage of job (MB)
+	1154608  -  ResidentSetSize of job (KB)
+...
+005 (12232638.000.000) 08/09 15:19:27 Job terminated.
+	(1) Normal termination (return value 0)
+		Usr 0 06:20:47, Sys 0 00:47:41  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+		Usr 0 06:20:47, Sys 0 00:47:41  -  Total Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Local Usage
+	0  -  Run Bytes Sent By Job
+	0  -  Run Bytes Received By Job
+	0  -  Total Bytes Sent By Job
+	0  -  Total Bytes Received By Job
+...
+000 (12235232.000.000) 08/10 11:58:50 Job submitted from host: <10.15.2.1:9618?PrivAddr=%3c172.22.0.101:9618%3fsock%3d2748_7a58_3%3e&PrivNet=internal.cluster.is.localnet&addrs=10.15.2.1-9618&noUDP&sock=2748_7a58_3>
+...
+001 (12235232.000.000) 08/10 11:58:59 Job executing on host: <172.22.2.20:9618?addrs=172.22.2.20-9618&noUDP&sock=6301_8a56_3>
+...
+006 (12235232.000.000) 08/10 11:59:08 Image size of job updated: 135924
+	79  -  MemoryUsage of job (MB)
+	80088  -  ResidentSetSize of job (KB)
+...
+009 (12235232.000.000) 08/10 14:40:41 Job was aborted by the user.
+	via condor_rm (by user wliang)
+...
+000 (12236220.000.000) 08/11 14:57:45 Job submitted from host: <10.15.2.1:9618?PrivAddr=%3c172.22.0.101:9618%3fsock%3d2748_7a58_3%3e&PrivNet=internal.cluster.is.localnet&addrs=10.15.2.1-9618&noUDP&sock=2748_7a58_3>
+...
+001 (12236220.000.000) 08/11 14:57:48 Job executing on host: <172.22.2.85:9618?addrs=172.22.2.85-9618&noUDP&sock=9044_029e_3>
+...
+006 (12236220.000.000) 08/11 14:57:57 Image size of job updated: 1679448
+	84  -  MemoryUsage of job (MB)
+	85732  -  ResidentSetSize of job (KB)
+...
+000 (12236232.000.000) 08/11 15:27:11 Job submitted from host: <10.15.2.1:9618?PrivAddr=%3c172.22.0.101:9618%3fsock%3d2748_7a58_3%3e&PrivNet=internal.cluster.is.localnet&addrs=10.15.2.1-9618&noUDP&sock=2748_7a58_3>
+...
+001 (12236232.000.000) 08/11 15:27:29 Job executing on host: <172.22.2.50:9618?addrs=172.22.2.50-9618&noUDP&sock=6609_cd81_3>
+...
+006 (12236232.000.000) 08/11 15:27:38 Image size of job updated: 1723784
+	104  -  MemoryUsage of job (MB)
+	105748  -  ResidentSetSize of job (KB)
+...
+006 (12236220.000.000) 08/11 15:28:01 Image size of job updated: 147751448
+	7442  -  MemoryUsage of job (MB)
+	7620140  -  ResidentSetSize of job (KB)
+...
+005 (12236220.000.000) 08/11 15:43:23 Job terminated.
+	(1) Normal termination (return value 127)
+		Usr 0 01:12:16, Sys 0 00:07:24  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+		Usr 0 01:12:16, Sys 0 00:07:24  -  Total Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Local Usage
+	0  -  Run Bytes Sent By Job
+	0  -  Run Bytes Received By Job
+	0  -  Total Bytes Sent By Job
+	0  -  Total Bytes Received By Job
+...
+005 (12236232.000.000) 08/11 15:44:46 Job terminated.
+	(1) Normal termination (return value 0)
+		Usr 0 00:23:00, Sys 0 00:03:37  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+		Usr 0 00:23:00, Sys 0 00:03:37  -  Total Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Local Usage
+	0  -  Run Bytes Sent By Job
+	0  -  Run Bytes Received By Job
+	0  -  Total Bytes Sent By Job
+	0  -  Total Bytes Received By Job
+...
+000 (12236258.000.000) 08/11 16:56:46 Job submitted from host: <10.15.2.1:9618?PrivAddr=%3c172.22.0.101:9618%3fsock%3d2748_7a58_3%3e&PrivNet=internal.cluster.is.localnet&addrs=10.15.2.1-9618&noUDP&sock=2748_7a58_3>
+...
+001 (12236258.000.000) 08/11 16:57:06 Job executing on host: <172.22.2.82:9618?addrs=172.22.2.82-9618&noUDP&sock=6643_1fba_3>
+...
+006 (12236258.000.000) 08/11 16:57:15 Image size of job updated: 147712
+	90  -  MemoryUsage of job (MB)
+	91348  -  ResidentSetSize of job (KB)
+...
+000 (12236259.000.000) 08/11 16:57:21 Job submitted from host: <10.15.2.1:9618?PrivAddr=%3c172.22.0.101:9618%3fsock%3d2748_7a58_3%3e&PrivNet=internal.cluster.is.localnet&addrs=10.15.2.1-9618&noUDP&sock=2748_7a58_3>
+...
+001 (12236259.000.000) 08/11 16:57:35 Job executing on host: <172.22.2.56:9618?addrs=172.22.2.56-9618&noUDP&sock=6804_8e79_3>
+...
+006 (12236259.000.000) 08/11 16:57:36 Image size of job updated: 33128
+	1  -  MemoryUsage of job (MB)
+	4  -  ResidentSetSize of job (KB)
+...
+005 (12236259.000.000) 08/11 16:57:37 Job terminated.
+	(1) Normal termination (return value 0)
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Local Usage
+	0  -  Run Bytes Sent By Job
+	0  -  Run Bytes Received By Job
+	0  -  Total Bytes Sent By Job
+	0  -  Total Bytes Received By Job
+	Partitionable Resources :    Usage  Request Allocated Assigned
+	   Cpus                 :                 4         4 
+	   Disk (KB)            :        1        1    831239 
+	   Gpus                 :                 1         1 "CUDA7"
+	   Memory (MB)          :        1    32000     32000 
+...
+009 (12236258.000.000) 08/11 17:01:10 Job was aborted by the user.
+	via condor_rm (by user wliang)
+...
+000 (12236261.000.000) 08/11 17:10:00 Job submitted from host: <10.15.2.1:9618?PrivAddr=%3c172.22.0.101:9618%3fsock%3d2748_7a58_3%3e&PrivNet=internal.cluster.is.localnet&addrs=10.15.2.1-9618&noUDP&sock=2748_7a58_3>
+...
+001 (12236261.000.000) 08/11 17:10:06 Job executing on host: <172.22.2.22:9618?addrs=172.22.2.22-9618&noUDP&sock=6302_39ee_3>
+...
+006 (12236261.000.000) 08/11 17:10:15 Image size of job updated: 146452
+	88  -  MemoryUsage of job (MB)
+	89164  -  ResidentSetSize of job (KB)
+...
+000 (12236262.000.000) 08/11 17:10:21 Job submitted from host: <10.15.2.1:9618?PrivAddr=%3c172.22.0.101:9618%3fsock%3d2748_7a58_3%3e&PrivNet=internal.cluster.is.localnet&addrs=10.15.2.1-9618&noUDP&sock=2748_7a58_3>
+...
+001 (12236262.000.000) 08/11 17:10:28 Job executing on host: <172.22.2.19:9618?addrs=172.22.2.19-9618&noUDP&sock=6312_15e1_3>
+...
+006 (12236262.000.000) 08/11 17:10:37 Image size of job updated: 1355084
+	1324  -  MemoryUsage of job (MB)
+	1355084  -  ResidentSetSize of job (KB)
+...
+005 (12236261.000.000) 08/11 18:13:17 Job terminated.
+	(1) Normal termination (return value 127)
+		Usr 0 01:46:45, Sys 0 00:08:33  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+		Usr 0 01:46:45, Sys 0 00:08:33  -  Total Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Local Usage
+	0  -  Run Bytes Sent By Job
+	0  -  Run Bytes Received By Job
+	0  -  Total Bytes Sent By Job
+	0  -  Total Bytes Received By Job
+...
+005 (12236262.000.000) 08/11 18:25:15 Job terminated.
+	(1) Normal termination (return value 0)
+		Usr 0 02:45:48, Sys 0 00:08:43  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+		Usr 0 02:45:48, Sys 0 00:08:43  -  Total Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Local Usage
+	0  -  Run Bytes Sent By Job
+	0  -  Run Bytes Received By Job
+	0  -  Total Bytes Sent By Job
+	0  -  Total Bytes Received By Job
+...
+000 (12236384.000.000) 08/11 23:28:01 Job submitted from host: <10.15.2.1:9618?PrivAddr=%3c172.22.0.101:9618%3fsock%3d2748_7a58_3%3e&PrivNet=internal.cluster.is.localnet&addrs=10.15.2.1-9618&noUDP&sock=2748_7a58_3>
+...
+001 (12236384.000.000) 08/11 23:28:07 Job executing on host: <172.22.2.22:9618?addrs=172.22.2.22-9618&noUDP&sock=6302_39ee_3>
+...
+006 (12236384.000.000) 08/11 23:28:16 Image size of job updated: 26408
+	2  -  MemoryUsage of job (MB)
+	1536  -  ResidentSetSize of job (KB)
+...
+000 (12236385.000.000) 08/11 23:28:25 Job submitted from host: <10.15.2.1:9618?PrivAddr=%3c172.22.0.101:9618%3fsock%3d2748_7a58_3%3e&PrivNet=internal.cluster.is.localnet&addrs=10.15.2.1-9618&noUDP&sock=2748_7a58_3>
+...
+001 (12236385.000.000) 08/11 23:28:31 Job executing on host: <172.22.2.19:9618?addrs=172.22.2.19-9618&noUDP&sock=6312_15e1_3>
+...
+006 (12236385.000.000) 08/11 23:28:40 Image size of job updated: 31476
+	2  -  MemoryUsage of job (MB)
+	1748  -  ResidentSetSize of job (KB)
+...
+006 (12236384.000.000) 08/11 23:29:12 Image size of job updated: 26860
+	2  -  MemoryUsage of job (MB)
+	1536  -  ResidentSetSize of job (KB)
+...
+005 (12236384.000.000) 08/11 23:29:12 Job terminated.
+	(1) Normal termination (return value 0)
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Local Usage
+	0  -  Run Bytes Sent By Job
+	0  -  Run Bytes Received By Job
+	0  -  Total Bytes Sent By Job
+	0  -  Total Bytes Received By Job
+	Partitionable Resources :    Usage  Request Allocated Assigned
+	   Cpus                 :     0.00        4         4 
+	   Disk (KB)            :     1           1    870290 
+	   Gpus                 :     0           1         1 "CUDA1"
+	   Memory (MB)          :     2       32000     32000 
+...
+005 (12236385.000.000) 08/12 00:25:37 Job terminated.
+	(1) Normal termination (return value 0)
+		Usr 0 01:26:18, Sys 0 00:17:00  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+		Usr 0 01:26:18, Sys 0 00:17:00  -  Total Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Local Usage
+	0  -  Run Bytes Sent By Job
+	0  -  Run Bytes Received By Job
+	0  -  Total Bytes Sent By Job
+	0  -  Total Bytes Received By Job
+...
+000 (12236411.000.000) 08/12 08:52:21 Job submitted from host: <10.15.2.1:9618?PrivAddr=%3c172.22.0.101:9618%3fsock%3d2748_7a58_3%3e&PrivNet=internal.cluster.is.localnet&addrs=10.15.2.1-9618&noUDP&sock=2748_7a58_3>
+...
+001 (12236411.000.000) 08/12 08:52:26 Job executing on host: <172.22.2.18:9618?addrs=172.22.2.18-9618&noUDP&sock=6229_2784_3>
+...
+006 (12236411.000.000) 08/12 08:52:35 Image size of job updated: 127072
+	69  -  MemoryUsage of job (MB)
+	70048  -  ResidentSetSize of job (KB)
+...
+000 (12236412.000.000) 08/12 08:53:04 Job submitted from host: <10.15.2.1:9618?PrivAddr=%3c172.22.0.101:9618%3fsock%3d2748_7a58_3%3e&PrivNet=internal.cluster.is.localnet&addrs=10.15.2.1-9618&noUDP&sock=2748_7a58_3>
+...
+001 (12236412.000.000) 08/12 08:53:08 Job executing on host: <172.22.2.23:9618?addrs=172.22.2.23-9618&noUDP&sock=6310_b6b0_3>
+...
+006 (12236412.000.000) 08/12 08:53:18 Image size of job updated: 5809260
+	654  -  MemoryUsage of job (MB)
+	668756  -  ResidentSetSize of job (KB)
+...
+006 (12236411.000.000) 08/12 08:54:15 Image size of job updated: 14584376
+	10021  -  MemoryUsage of job (MB)
+	10260808  -  ResidentSetSize of job (KB)
+...
+006 (12236412.000.000) 08/12 08:54:15 Image size of job updated: 14592092
+	8291  -  MemoryUsage of job (MB)
+	8489396  -  ResidentSetSize of job (KB)
+...
+004 (12236412.000.000) 08/12 08:54:16 Job was evicted.
+	(0) Job was not checkpointed.
+		Usr 0 00:00:58, Sys 0 00:00:08  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+	0  -  Run Bytes Sent By Job
+	0  -  Run Bytes Received By Job
+	Partitionable Resources :    Usage  Request Allocated Assigned
+	   Cpus                 :     1.00        4         4 
+	   Disk (KB)            :     1           1    870290 
+	   Gpus                 :     0           1         1 "CUDA2"
+	   Memory (MB)          :  8291       32000     32000 
+...
+009 (12236412.000.000) 08/12 08:54:16 Job was aborted by the user.
+	via condor_rm (by user wliang)
+...
+004 (12236411.000.000) 08/12 08:54:16 Job was evicted.
+	(0) Job was not checkpointed.
+		Usr 0 00:01:19, Sys 0 00:00:17  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+	0  -  Run Bytes Sent By Job
+	0  -  Run Bytes Received By Job
+	Partitionable Resources :    Usage  Request Allocated Assigned
+	   Cpus                 :     0.96        4         4 
+	   Disk (KB)            :     1           1    870290 
+	   Gpus                 :     0           1         1 "CUDA1"
+	   Memory (MB)          : 10021       32000     32000 
+...
+009 (12236411.000.000) 08/12 08:54:16 Job was aborted by the user.
+	via condor_rm (by user wliang)
+...
+000 (12236466.000.000) 08/12 09:07:58 Job submitted from host: <10.15.2.1:9618?PrivAddr=%3c172.22.0.101:9618%3fsock%3d2748_7a58_3%3e&PrivNet=internal.cluster.is.localnet&addrs=10.15.2.1-9618&noUDP&sock=2748_7a58_3>
+...
+001 (12236466.000.000) 08/12 09:08:02 Job executing on host: <172.22.2.18:9618?addrs=172.22.2.18-9618&noUDP&sock=6229_2784_3>
+...
+006 (12236466.000.000) 08/12 09:08:04 Image size of job updated: 5148
+	1  -  MemoryUsage of job (MB)
+	456  -  ResidentSetSize of job (KB)
+...
+005 (12236466.000.000) 08/12 09:08:05 Job terminated.
+	(1) Normal termination (return value 0)
+		Usr 0 00:00:01, Sys 0 00:00:01  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+		Usr 0 00:00:01, Sys 0 00:00:01  -  Total Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Local Usage
+	0  -  Run Bytes Sent By Job
+	0  -  Run Bytes Received By Job
+	0  -  Total Bytes Sent By Job
+	0  -  Total Bytes Received By Job
+	Partitionable Resources :    Usage  Request Allocated Assigned
+	   Cpus                 :     0.57        4         4 
+	   Disk (KB)            :     1           1    870290 
+	   Gpus                 :     0           1         1 "CUDA1"
+	   Memory (MB)          :     1       32000     32000 
+...
+000 (12236467.000.000) 08/12 09:08:35 Job submitted from host: <10.15.2.1:9618?PrivAddr=%3c172.22.0.101:9618%3fsock%3d2748_7a58_3%3e&PrivNet=internal.cluster.is.localnet&addrs=10.15.2.1-9618&noUDP&sock=2748_7a58_3>
+...
+001 (12236467.000.000) 08/12 09:08:40 Job executing on host: <172.22.2.18:9618?addrs=172.22.2.18-9618&noUDP&sock=6229_2784_3>
+...
+006 (12236467.000.000) 08/12 09:08:42 Image size of job updated: 1
+	0  -  MemoryUsage of job (MB)
+	0  -  ResidentSetSize of job (KB)
+...
+005 (12236467.000.000) 08/12 09:08:42 Job terminated.
+	(1) Normal termination (return value 0)
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Local Usage
+	0  -  Run Bytes Sent By Job
+	0  -  Run Bytes Received By Job
+	0  -  Total Bytes Sent By Job
+	0  -  Total Bytes Received By Job
+	Partitionable Resources :    Usage  Request Allocated Assigned
+	   Cpus                 :     1.00        4         4 
+	   Disk (KB)            :     1           1    870290 
+	   Gpus                 :     0           1         1 "CUDA1"
+	   Memory (MB)          :     0       32000     32000 
+...
+000 (12239862.000.000) 08/12 13:45:24 Job submitted from host: <10.15.2.1:9618?PrivAddr=%3c172.22.0.101:9618%3fsock%3d2748_7a58_3%3e&PrivNet=internal.cluster.is.localnet&addrs=10.15.2.1-9618&noUDP&sock=2748_7a58_3>
+...
+001 (12239862.000.000) 08/12 13:45:29 Job executing on host: <172.22.2.85:9618?addrs=172.22.2.85-9618&noUDP&sock=9044_029e_3>
+...
+006 (12239862.000.000) 08/12 13:45:38 Image size of job updated: 1639112
+	92  -  MemoryUsage of job (MB)
+	93704  -  ResidentSetSize of job (KB)
+...
+006 (12239862.000.000) 08/12 13:45:46 Image size of job updated: 1776712
+	92  -  MemoryUsage of job (MB)
+	93836  -  ResidentSetSize of job (KB)
+...
+005 (12239862.000.000) 08/12 13:45:46 Job terminated.
+	(1) Normal termination (return value 0)
+		Usr 0 00:00:03, Sys 0 00:00:03  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+		Usr 0 00:00:03, Sys 0 00:00:03  -  Total Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Local Usage
+	0  -  Run Bytes Sent By Job
+	0  -  Run Bytes Received By Job
+	0  -  Total Bytes Sent By Job
+	0  -  Total Bytes Received By Job
+	Partitionable Resources :    Usage  Request Allocated Assigned
+	   Cpus                 :     0.55        4         4 
+	   Disk (KB)            :     1           1    831239 
+	   Gpus                 :     0           1         1 "CUDA5"
+	   Memory (MB)          :    92       32000     32000 
+...
+000 (12239905.000.000) 08/12 13:48:47 Job submitted from host: <10.15.2.1:9618?PrivAddr=%3c172.22.0.101:9618%3fsock%3d2748_7a58_3%3e&PrivNet=internal.cluster.is.localnet&addrs=10.15.2.1-9618&noUDP&sock=2748_7a58_3>
+...
+001 (12239905.000.000) 08/12 13:49:04 Job executing on host: <172.22.2.85:9618?addrs=172.22.2.85-9618&noUDP&sock=9044_029e_3>
+...
+006 (12239905.000.000) 08/12 13:49:13 Image size of job updated: 5063204
+	2009  -  MemoryUsage of job (MB)
+	2056520  -  ResidentSetSize of job (KB)
+...
+005 (12239905.000.000) 08/12 14:44:46 Job terminated.
+	(1) Normal termination (return value 0)
+		Usr 0 01:51:51, Sys 0 00:06:54  -  Run Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Run Local Usage
+		Usr 0 01:51:51, Sys 0 00:06:54  -  Total Remote Usage
+		Usr 0 00:00:00, Sys 0 00:00:00  -  Total Local Usage
+	0  -  Run Bytes Sent By Job
+	0  -  Run Bytes Received By Job
+	0  -  Total Bytes Sent By Job
+	0  -  Total Bytes Received By Job
+...

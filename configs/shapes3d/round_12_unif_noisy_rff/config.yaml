@@ -1,0 +1,12 @@
+
+dataset: [shapes3d]
+model_type: [almost_uniform_mix_labels, noisy_labels]
+
+probe:
+  hidden_dim: [0]
+  num_hidden_layers: [0]
+  # rff_sigma_gain: [10.0 ,1.0, 0.1, 0.01]
+  rff_sigma_gain: [1.0, 0.5, 0.1]
+  lr: [0.0002, 0.0001]
+  # hidden_dim: [16, 32, 64, 128, 256, 512, 1024, 2048, 4096]
+  hidden_dim: [32, 128, 4096]

@@ -1,0 +1,9 @@
+executable = /home/anicolicioiu/projects/loss_capacity/src/start_liftoff.sh
+arguments = /tmp/$(Process)
+error = test5.$(Process).err
+output = test5.$(Process).out
+log = test5.$(Process).log
+request_memory = 32024
+request_cpus = 4
+request_gpus = 1
+queue 1

@@ -1,0 +1,89 @@
+name: pretrained
+
+######################### dataset parameters #########################
+# dataset containing images and original targets
+dataset: cars3d # dsprites / shapes3d / mpi3d
+dataset_path: ./data/disent_indommain/
+cached_representations: False
+# dataset containing extracted reprentations and processed targets
+representation_dataset_path: ./
+resnet_representation_dataset_path: ../checkpoints/resnet18/cars3d_resnet18_pretrained_dataset
+vae_representation_dataset_path: /home/anicolicioiu/data/models/results_liftoff_loss_capacity_discrete_and_c_good/2022May17-170014_unsup_vae/
+vae_representation_dataset_path: /home/anicolicioiu/data/models/results_liftoff_loss_capacity_discrete_and_c_good/2022May19-125638_unsup_vae/
+
+num_workers: 2
+
+# batch_size: 64
+# epochs: 100
+# lr: 0.001
+# gamma: 0.7 # Learning rate step gamma (default: 0.7)
+dry-run: False
+seed: 1
+log_interval: 10 # log every N batches
+save_model: True
+######################### model parameters #########################
+# model used for obtaining the representations chose from 
+# [raw_data/ noisy_labels / random_linear_mix_labels / noisy_uniform_mix_labels / resnet18]
+model_type: vae 
+supervision: False
+pretrained: True
+noise_std: 0.0 
+save_representation_datasets: True
+model:
+  lr: 0.001
+  epochs: 100
+  batch_size: 64
+  gamma: 0.1 # Learning rate step gamma (default: 0.7)
+  optim_steps: [70, 90]
+######################### probe parameters #########################
+
+probe:
+  type: tree_ens_xgb # MLP_reg / MLP_reg_cl / tree_ens_rf / tree_ens_hgb 
+  data_fraction: 1.0
+  max_leaf_nodes: None
+  max_depth: 50
+  hidden_layers: 2
+  hidden_multiplier: 128 # size of the hidden layer (multiplier x num_factors) (default: 16)
+  rf_lr: 0.1
+  lr: 0.0004
+  epochs: 100
+  batch_size: 128
+  gamma: 0.1
+  optim_steps: [70, 90]
+  noise_std_mult: 1.0
+  cross_ent_mult: 1.0
+
+vae:
+  model_params:
+    name: 'BetaVAE'
+    in_channels: 3
+    latent_dim: 10
+    loss_type: 'H'
+    beta: 1.
+    recons_type: 'bce'
+    model_type: 'small' # small / big
+
+  data_params:
+    data_path: "Data/"
+    train_batch_size: 64
+    val_batch_size:  64
+    patch_size: 64
+    num_workers: 4
+
+
+  exp_params:
+    LR: 0.005
+    weight_decay: 0.0
+    scheduler_gamma: 0.95
+    kld_weight: 0.00001 #0.00025
+    manual_seed: 1265
+
+  trainer_params:
+    gpus: [0]
+    max_epochs: 100
+
+  logging_params:
+    save_dir: "logs/"
+    # name: 'BetaVAE'
+    name: 'VAE'
+
