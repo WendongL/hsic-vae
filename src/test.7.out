@@ -1,7 +1,0 @@
-/home/wliang/miniconda3/envs/vae
-Python 3.7.13
-[1mLiftoff 0.3.1 @ src:main:d839f27[0m
-[Fri Aug 12 09:08:04 2022] Resources: Procs: 0 / 1 | 1 GPUS: 0:0/1;
-[Fri Aug 12 09:08:04 2022] Free??: True, 0
-[Fri Aug 12 09:08:04 2022] All subexperiments are done / running.
-[1m[Fri Aug 12 09:08:04 2022] Experiment ./results/2022Aug12-090203_unsup_vae_sum_epochs_bottle/ ended after 0.02s.[0m

@@ -3,18 +3,18 @@
 # condor_submit 1L_weight.sub
 #
 
-executable = /is/ei/wliang/loss_capacity/src/unsup.sh
+executable = /is/ei/wliang/loss_capacity/src/calc_HSIC.sh
 arguments = /tmp/train_unsupervised_model
 error = test.$(Process).err
 output = test.$(Process).out
 log = test.$(Process).log
 request_memory = 32000
-#request_disk = 12G
+request_disk = 12G
 request_cpus = 4
 request_gpus = 1
 requirements = TARGET.CUDACapability < 8.0 
 
-queue 7
+queue 2
 
 # this will start 10 virtual machines, each with 4 GPUs and 12 CPUs
 #  using these 4 GPUs and 12 CPUs the start_liftoff script will lounch 4 x 8 = 32 proceeses

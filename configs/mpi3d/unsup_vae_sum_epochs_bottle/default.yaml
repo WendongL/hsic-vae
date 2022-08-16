@@ -42,6 +42,7 @@ probe:
   data_fraction: 1.0
   max_leaf_nodes: None
   max_depth: 50
+  num_trees: 100
   hidden_layers: 2
   hidden_multiplier: 128 # size of the hidden layer (multiplier x num_factors) (default: 16)
   rf_lr: 0.1
@@ -80,7 +81,7 @@ vae:
 
   trainer_params:
     gpus: [0]
-    max_epochs: 10
+    max_epochs: 40
 
   logging_params:
     save_dir: "logs/"

@@ -270,23 +270,26 @@ class MetricsPytorch:
         return scores_d
         
 ### calculate HSIC for trained model checkpoints
-def hsic_batch(real_img, experiment, s_x=1, s_y=1, device='cuda', batch_size=512):
+def hsic_batch(real_img, experiment, s_x=1, s_y=1, device='cuda', batch_size=512,
+                num_sample_reparam = 1):
+            # num_sample_reparam: num of samples of reparamatrizing z using mu and sigma
     experiment.model.to(device)
     flat = torch.nn.Flatten()
-    inputs = real_img.to(device)
-    feats = experiment.model.encode(inputs).to(device)
-    outputs = experiment.model.decode(feats).to(device)
-    # output = model(data)
     
-    inputs = flat(inputs)
-    feats = flat(feats)
-    outputs = flat(outputs)
+    hsic_score = 0
+    for i in range(num_sample_reparam):
+        inputs = real_img.to(device)
+        feats = experiment.model.encode(inputs).to(device)
+        outputs = experiment.model.decode(feats).to(device)
+        inputs = flat(inputs)
+        feats = flat(feats)
+        outputs = flat(outputs)
+        inputs = inputs.detach()
+        feats = feats.detach()
+        outputs = outputs.detach()
 
-    feats = feats.detach()
-    inputs = inputs.detach()
-    outputs = outputs.detach()
-
-    hsic_score = HSIC(feats, inputs - outputs, s_x, s_y)
+        hsic_score += HSIC(feats, inputs - outputs, s_x, s_y, no_grad = True)
+    hsic_score /= num_sample_reparam
     return hsic_score
 
 def from_pickle(path): # load something

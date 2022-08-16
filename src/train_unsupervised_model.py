@@ -202,16 +202,16 @@ def run(params):
                 )
 
         # HSIC
-        all_inputs, all_feats, all_outputs = get_representations_data_split(model, dataloader_test.dataset, device, num_samples=512,
-                     shuffle=True, batch_size =  params.probe.batch_size)######
-        all_inputs = all_inputs.to(device)
-        all_feats = all_feats.to(device)
-        all_outputs = all_outputs.to(device)
-        hsic_score = HSIC(all_feats, all_inputs - all_outputs)
-        print('hsic_score', hsic_score)
-        dci_scores_trees['hsic_score']=hsic_score
-        with open(os.path.join(params.out_dir, 'beta'+ str(params.vae.model_params.beta)+'.pickle'), 'wb') as f:
-            pickle.dump(dci_scores_trees, f)
+        # all_inputs, all_feats, all_outputs = get_representations_data_split(model, dataloader_test.dataset, device, num_samples=512,
+        #              shuffle=True, batch_size =  params.probe.batch_size)######
+        # all_inputs = all_inputs.to(device)
+        # all_feats = all_feats.to(device)
+        # all_outputs = all_outputs.to(device)
+        # hsic_score = HSIC(all_feats, all_inputs - all_outputs)
+        # print('hsic_score', hsic_score)
+        # dci_scores_trees['hsic_score']=hsic_score
+        # with open(os.path.join(params.out_dir, 'beta'+ str(params.vae.model_params.beta)+'.pickle'), 'wb') as f:
+        #     pickle.dump(dci_scores_trees, f)
 # def w_save_representation_dataset(device, model, dataset, path):
 #     pdb.set_trace()
 #     print(f'saving representation dataset at: {path}')

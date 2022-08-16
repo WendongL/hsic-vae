@@ -53,9 +53,10 @@ from glob import glob
 
 def run(params):
     """ Entry point for liftoff. """
-    path = "./results/2022Aug12-134358_unsup_vae_dsprites_bottle_kl100"
-    sigma_hsic = [0.01, 0.1, 1, 10, 100, 1000]
+    path = params.result_path
+    sigma_hsic = [0.1, 1, 10, 100, 1000, 10000, 100000]
     results_hsic = dict([(str(x),0) for x in sigma_hsic])
+    num_sample_reparam = 5
 
     params = list2tuple_(params)
     params.num_workers = 2
@@ -75,16 +76,8 @@ def run(params):
     # TODO: maybe do smt more generic
     # model = vae_models[config.model_params.name](**configmodel_params)
 
-    if config.model_params.model_type == 'small':
-        model = SmallBetaVAE(**config.model_params.__dict__)
-    elif config.model_params.model_type == 'big':
-        model = BetaVAE(**config.model_params.__dict__)
-
 
     device = 'cuda'
-    model = model.to(device)
-    experiment = VAEXperiment(model,
-                            config.exp_params)
 
     
     # if restore:
@@ -128,7 +121,7 @@ def run(params):
         num_workers=params.num_workers,
         standardise=True,
         imagenet_normalise=imagenet_normalise,
-        shuffle=False
+        shuffle=True
     )
 
     for folder in glob(path+"/*/", recursive = True):
@@ -137,35 +130,20 @@ def run(params):
         # model.load_state_dict(ckpt['state_dict'])
         
         experiment = VAEXperiment.load_from_checkpoint(folder+"0/BetaVAE/version_0/checkpoints/last.ckpt")
-
-        # num_probe_params, probe_train_score, probe_val_score, probe_test_score, dci_scores_trees = train_test_random_forest(
-        #         model=model, 
-        #         dataloader_train=dataloader_train, 
-        #         dataloader_val=dataloader_val, 
-        #         dataloader_test=dataloader_test, 
-        #         method='rf',#params.probe.type,
-        #         max_leaf_nodes=params.probe.max_leaf_nodes,
-        #         max_depth=params.probe.max_depth,
-        #         num_trees=params.probe.num_trees,
-        #         seed = params.seed * params.run_id,
-        #         lr = params.probe.rf_lr,
-        #         epochs = params.probe.epochs, 
-        #         log_interval =  params.log_interval, save_model = params.save_model,
-        #         train_name='probe_trees',
-        #         tb_writer=None, eval_model=True, savefolder=params.out_dir,
-        #         device=device,
-        #         data_fraction=params.probe.data_fraction,
-        #         use_sage=False
-        #         )
+        latent_dim = experiment.model.latent_dim
         for sigma in sigma_hsic:
             hsic_score = 0
-            for images, labels in dataloader_test:
-                images.to('cuda')
-                hsic_score += hsic_batch(images, experiment, s_x=sigma, s_y=sigma, device='cuda', batch_size=512).item()
+            i = 0
+            for images, labels in dataloader_test: # dataloader is shuffled, we take a 1/5 subsampling because it is too big.
+                while i < len(dataloader_test)/5:
+                    images.to('cuda')
+                    hsic_score += hsic_batch(images, experiment, s_x=sigma*latent_dim, s_y=sigma, 
+                                    device='cuda', batch_size=512, num_sample_reparam=num_sample_reparam).item()
+                    i += 1
             hsic_score /= len(dataloader_test)
             results_hsic[str(sigma)] = hsic_score
             print(sigma, 'hsic_score', hsic_score)
-            to_pickle(results_hsic,folder+'0/hsic_sigma.pickle')
+            to_pickle(results_hsic,folder+'0/hsic_sigma_num_reparam_'+str(num_sample_reparam)+'_1.pickle')
 
 
     # dci_scores_trees['hsic'] = hsic_score
