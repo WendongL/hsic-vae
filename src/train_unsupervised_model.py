@@ -6,7 +6,9 @@ import argparse
 import numpy as np
 from pathlib import Path
 from PyTorchVAE.models.beta_vae import BetaVAE, SmallBetaVAE
+from PyTorchVAE.models.hsicbeta_vae import HsicBetaVAE, SmallHsicBetaVAE
 from PyTorchVAE.experiment import VAEXperiment
+from PyTorchVAE.experiment_hsicbeta import VAEXperiment_hsicbeta
 import torch.backends.cudnn as cudnn
 from pytorch_lightning import Trainer
 from pytorch_lightning.loggers import TensorBoardLogger
@@ -71,11 +73,17 @@ def run(params):
 
     if config.model_params.model_type == 'small':
         model = SmallBetaVAE(**config.model_params.__dict__)
+        experiment = VAEXperiment(model, config.exp_params)
     elif config.model_params.model_type == 'big':
         model = BetaVAE(**config.model_params.__dict__)
-
-    experiment = VAEXperiment(model,
-                            config.exp_params)
+        experiment = VAEXperiment(model, config.exp_params)
+    elif config.model_params.model_type == 'smallhsicbeta':
+        model = SmallHsicBetaVAE(**config.model_params.__dict__)
+        experiment = VAEXperiment_hsicbeta(model, config.exp_params)
+    elif config.model_params.model_type == 'bighsicbeta':
+        experiment = VAEXperiment_hsicbeta(model, config.exp_params)
+    
+    
 
     # if restore:
     #     ckpt = params.out_dir + '/BetaVAE/version_0/checkpoints/last.ckpt'
@@ -201,17 +209,9 @@ def run(params):
                 use_sage=False
                 )
 
-        # HSIC
-        # all_inputs, all_feats, all_outputs = get_representations_data_split(model, dataloader_test.dataset, device, num_samples=512,
-        #              shuffle=True, batch_size =  params.probe.batch_size)######
-        # all_inputs = all_inputs.to(device)
-        # all_feats = all_feats.to(device)
-        # all_outputs = all_outputs.to(device)
-        # hsic_score = HSIC(all_feats, all_inputs - all_outputs)
-        # print('hsic_score', hsic_score)
-        # dci_scores_trees['hsic_score']=hsic_score
-        # with open(os.path.join(params.out_dir, 'beta'+ str(params.vae.model_params.beta)+'.pickle'), 'wb') as f:
-        #     pickle.dump(dci_scores_trees, f)
+        
+        with open(os.path.join(params.out_dir, f'dci_klw{config.exp_params.kld_weight}_latent_{config.model_params.latent_dim}.pickle'), 'wb') as f:
+            pickle.dump(dci_scores_trees, f)
 # def w_save_representation_dataset(device, model, dataset, path):
 #     pdb.set_trace()
 #     print(f'saving representation dataset at: {path}')
@@ -224,6 +224,26 @@ def run(params):
 #     inputs, targets = next(iter(dataloader))
 #     feats = model.encode(inputs.to(device))
 #     # outputs = model.decode(feats)
+
+
+# For debug of saving models
+# def run(params):
+#     params = list2tuple_(params)
+#     params.num_workers = 2
+#     config = params.vae
+#     # For reproducibility
+#     seed_everything(config.exp_params.manual_seed * params.run_id, True)
+
+#     if config.model_params.model_type == 'small':
+#         model = SmallBetaVAE(**config.model_params.__dict__)
+#     elif config.model_params.model_type == 'big':
+#         model = BetaVAE(**config.model_params.__dict__)
+#     savename = params.out_dir + f'/{params.dataset}_{params.model_type}_{params.name}'
+#     checkpoint_path = savename + '.pt'
+#     torch.save(model.state_dict(), savename +'.pt')
+
+if __name__ == "__main__":
+    run(parse_opts())
 #     all_feats = np.zeros((len(dataset), feats.shape[1])).astype(np.float32)
 #     all_targets = np.zeros((len(dataset), targets.shape[1])).astype(np.float32)
 #     print(f'dataloader len: {len(dataset)}')
@@ -420,8 +440,3 @@ def run(params):
 #     print(f'sage: sage_num_samples: {sage_num_samples}, sage_thresh: {sage_thresh}')
 
 #     return capacity, all_rsquared_train, all_rsquared_val, all_rsquared_test, dci_scores
-
-
-if __name__ == "__main__":
-    run(parse_opts())
-

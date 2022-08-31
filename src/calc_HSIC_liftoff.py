@@ -47,13 +47,14 @@ import pickle
 import json
 import pdb
 
-from loss_capacity.utils import hsic_batch, hsic_batch_v2, from_pickle, to_pickle
+from loss_capacity.utils import hsic_batch, from_pickle, to_pickle
 from glob import glob
 
 
 def run(params):
     """ Entry point for liftoff. """
     path = params.result_path
+    n_experiment = params.n_experiment
     sigma_hsic = params.hsic.sigma_hsic   ##[0.1, 1, 10, 100, 1000, 10000, 100000]
     results_hsic = dict([(str(x),0) for x in sigma_hsic])
     num_sample_reparam = params.hsic.num_sample_reparam
@@ -115,7 +116,7 @@ def run(params):
         num_workers=params.num_workers,
         standardise=True,
         imagenet_normalise=imagenet_normalise,
-        shuffle=True
+        shuffle=False
     )
     elif choose_dataloader == 'test':
         dataloader = load_dataset.load_dataset(
@@ -127,7 +128,7 @@ def run(params):
             num_workers=params.num_workers,
             standardise=True,
             imagenet_normalise=imagenet_normalise,
-            shuffle=True
+            shuffle=False
         )
     if params.hsic.xlatent:
         title_text_x =  'xlatent'
@@ -138,40 +139,38 @@ def run(params):
     else:
         title_text_y = ''
 
-    for folder in sorted(glob(path+"/*/*/", recursive = True)):
-        print(folder)
-        # ckpt = torch.load(folder+"0/BetaVAE/version_0/checkpoints/last.ckpt")
-        # print(ckpt.keys())
-        # model.load_state_dict(ckpt['state_dict'])
+    for folder in sorted(glob(path+"/*/", recursive = True)):
+        if n_experiment in folder:
+            # ckpt = torch.load(folder+"0/BetaVAE/version_0/checkpoints/last.ckpt")
+            # print(ckpt.keys())
+            # model.load_state_dict(ckpt['state_dict'])
+            for subfolder in sorted(glob(folder+"/*/", recursive = True)):
+                experiment = VAEXperiment.load_from_checkpoint(subfolder+"BetaVAE/version_0/checkpoints/last.ckpt")
+                latent_dim = experiment.model.latent_dim
 
-        experiment = VAEXperiment.load_from_checkpoint(folder+"BetaVAE/version_0/checkpoints/last.ckpt")
-        latent_dim = experiment.model.latent_dim
+                if params.hsic.xlatent:
+                    x_multi = latent_dim
+                else:
+                    x_multi = 1
+                if params.hsic.ylatent:
+                    y_multi = latent_dim
+                else:
+                    y_multi = 1
 
-        if params.hsic.xlatent:
-            x_multi = latent_dim
-        else:
-            x_multi = 1
-        if params.hsic.ylatent:
-            y_multi = latent_dim
-        else:
-            y_multi = 1
-
-        for sigma in tqdm(sigma_hsic):
-            hsic_score = 0
-            i = 0
-            for images, labels in dataloader: # dataloader is shuffled, we take a subsampling because it is too big.
-                while i < len(dataloader)/div_subsample:
-                    images.to('cuda')
-                    # print(images.shape)
-                    # hsic_score += hsic_batch(images, experiment, s_x=sigma*x_multi, s_y=sigma*y_multi, 
-                    #                 device='cuda', batch_size=512, num_sample_reparam=num_sample_reparam).item()
-                    hsic_score += hsic_batch_v2(images, experiment, s_x=sigma*x_multi, s_y=sigma*y_multi, 
-                                    device='cuda', num_sample_reparam=num_sample_reparam).item()
-                    i += 1
-            hsic_score /= (len(dataloader)//div_subsample)
-            results_hsic[str(sigma)] = hsic_score
-            print(sigma, 'hsic_score testset', hsic_score)
-        to_pickle(results_hsic,folder+'hsic_num_reparam_'+str(num_sample_reparam)+'_'+ 'div_'+ str(div_subsample) + title_text_x +'_'+ title_text_y + '_'+ choose_dataloader +'_v3.pickle')
+                for sigma in tqdm(sigma_hsic):
+                    hsic_score = 0
+                    i = 0
+                    for images, labels in dataloader: # dataloader is shuffled, we take a subsampling because it is too big.
+                        print(images.shape)
+                        while i < len(dataloader)/div_subsample:
+                            images.to('cuda')
+                            hsic_score += hsic_batch(images, experiment, s_x=sigma*x_multi, s_y=sigma*y_multi, 
+                                            device='cuda', batch_size=512, num_sample_reparam=num_sample_reparam).item()
+                            i += 1
+                    hsic_score /= (len(dataloader)/div_subsample)
+                    results_hsic[str(sigma)] = hsic_score
+                    print(sigma, 'hsic_score testset', hsic_score)
+                to_pickle(results_hsic,subfolder+'hsic_num_reparam_'+str(num_sample_reparam)+'_'+ title_text_x +'_'+ title_text_y + '_'+ choose_dataloader +'.pickle')
 
 
 

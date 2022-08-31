@@ -7,4 +7,4 @@ echo $CONDA_PREFIX
 # module load cuda/11.3
 python --version
 cd /is/ei/wliang/loss_capacity/src/
-liftoff calc_HSIC.py ./results/2022Aug30-145205_unsup_vae_mpi3d_calc_HSIC_v3/ --gpus 0 --per-gpu 1 --procs-no 1 --results-path results
+liftoff plot_interpolate.py ./results/2022Aug23-095428_unsup_vae_dsprites_plot_interpolate/ --gpus 0 --per-gpu 1 --procs-no 1 --results-path results

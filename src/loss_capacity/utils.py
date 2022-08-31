@@ -16,7 +16,7 @@ import torch.nn as nn
 # TK = TypeVar("TK")
 # TV = TypeVar("TV")
 import pdb
-from loss_capacity.functions import HSIC
+from loss_capacity.functions import HSIC, HSIC_
 import pickle
 
 def list2tuple_(opt: Namespace) -> Namespace:
@@ -271,7 +271,7 @@ class MetricsPytorch:
         
 ### calculate HSIC for trained model checkpoints
 def hsic_batch(real_img, experiment, s_x=1, s_y=1, device='cuda', batch_size=512,
-                num_sample_reparam = 1):
+                num_sample_reparam = 1, no_grad = True):
             # num_sample_reparam: num of samples of reparamatrizing z using mu and sigma
     experiment.model.to(device)
     flat = torch.nn.Flatten()
@@ -288,8 +288,45 @@ def hsic_batch(real_img, experiment, s_x=1, s_y=1, device='cuda', batch_size=512
         feats = feats.detach()
         outputs = outputs.detach()
 
-        hsic_score += HSIC(feats, inputs - outputs, s_x, s_y, no_grad = True)
+        hsic_score += HSIC(feats, inputs - outputs, s_x, s_y, no_grad = no_grad)
     hsic_score /= num_sample_reparam
+    return hsic_score
+
+def hsic_batch_v2(real_img, experiment, s_x=1, s_y=1, device='cuda',
+                num_sample_reparam = 1, no_grad = True):
+            # calculate HSIC(Z(X), X-dec(Z(X)))
+            # num_sample_reparam: num of samples of reparamatrizing z using mu and sigma
+            # num_sample_reparam is thus the dimension of the kernels of HSIC.
+            # we only define the calculation of HSIC for one x.
+    experiment.model.to(device)
+    flat = torch.nn.Flatten(start_dim=-3, end_dim=-1) # only flatten the last 3 dim
+    batch_size = real_img.shape[0]
+    # print('real_img', real_img.shape)
+
+    inputs = real_img.to(device)
+    feats = torch.zeros(batch_size, num_sample_reparam, experiment.model.latent_dim)
+    outputs = torch.zeros(batch_size, num_sample_reparam, inputs.shape[1], inputs.shape[2], inputs.shape[3])
+    # print('outputs',outputs.shape)
+    # pdb.set_trace()
+    feats = feats.to(device)
+    outputs = outputs.to(device)
+    for i in range(num_sample_reparam):
+        feats[:, i, :] = experiment.model.encode(inputs)
+        # print('outputs[:, i, :, :]',outputs[:, i, :, :].shape)
+        # print('experiment.model.decode(torch.squeeze(feats[:, i, :]))',experiment.model.decode(torch.squeeze(feats[:, i, :])).shape)
+        outputs[:, i, :, :, :] = experiment.model.decode(feats[:, i, :])##########
+    
+    # pdb.set_trace()
+    inputs = inputs.unsqueeze(1).repeat(1, num_sample_reparam, 1, 1, 1) # repeat batch_size times H
+    inputs = flat(inputs)
+    outputs = flat(outputs)
+    inputs = inputs.detach()
+    feats = feats.detach()
+    outputs = outputs.detach()
+    
+    
+    hsic_score = HSIC_(feats, inputs - outputs, s_x, s_y, no_grad = no_grad)
+
     return hsic_score
 
 def from_pickle(path): # load something
