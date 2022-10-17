@@ -191,8 +191,9 @@ def train_test_random_forest(
 
 
         # save
-        if not (resume and os.path.exists(savefile)):
-            joblib.dump(model, savefile)
+        if save_model:
+            if not (resume and os.path.exists(savefile)):
+                joblib.dump(model, savefile)
 
         # clf = load('filename.joblib') 
         

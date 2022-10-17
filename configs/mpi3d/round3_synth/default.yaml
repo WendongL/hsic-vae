@@ -1,0 +1,45 @@
+name: pretrained
+model_dir: ../results/supervised_models/round2/resnet18_pretrained100_lrstep0.5
+# model_dir: ../checkpoints/resnet18/
+
+######################### dataset parameters #########################
+# dataset containing images and original targets
+dataset: shapes3d # dsprites / shapes3d / mpi3d
+dataset_path: /home/anico/data/disent_indommain/
+cached_representations: False
+# dataset containing extracted reprentations and processed targets
+representation_dataset_path: /home/anico//projects/loss_capacity/checkpoints/resnet18/shapes3d_resnet18_pretrained_dataset
+
+# batch_size: 64
+# epochs: 100
+# lr: 0.001
+# gamma: 0.7 # Learning rate step gamma (default: 0.7)
+dry-run: False
+seed: 1
+log_interval: 10 # log every N batches
+save_model: True
+######################### model parameters #########################
+# model used for obtaining the representations chose from 
+# [raw_data/ noisy_labels / random_linear_mix_labels / noisy_uniform_mix_labels / conv_net]
+model_type: raw_data 
+supervision: False
+pretrained: True
+noise_std: 0.0 
+save_representation_datasets: False
+model:
+  lr: 0.001
+  epochs: 100
+  batch_size: 64
+  gamma: 0.1 # Learning rate step gamma (default: 0.7)
+  optim_steps: [70, 90]
+
+######################### probe parameters #########################
+
+probe:
+  hidden_layers: 2
+  hidden_multiplier: 16 # size of the hidden layer (multiplier x num_factors) (default: 16)
+  lr: 0.001
+  epochs: 100
+  batch_size: 64
+  gamma: 0.1
+  optim_steps: [70, 90]

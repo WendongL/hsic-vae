@@ -20,7 +20,7 @@ gamma: 0.7 # Learning rate step gamma (default: 0.7)
 dry-run: False
 seed: 1
 log_interval: 10 # log every N batches
-save_model: True
+save_model: False
 ######################### model parameters #########################
 # model used for obtaining the representations chose from 
 # [raw_data/ noisy_labels / random_linear_mix_labels / noisy_uniform_mix_labels / resnet18]

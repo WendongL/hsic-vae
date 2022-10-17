@@ -1,0 +1,11 @@
+dataset: [mpi3d]
+pretrained: [True]
+model_type: [almost_uniform_mix_labels, almost_uniform_mix_labels_diag]
+
+probe:
+  hidden_multiplier: [0]
+  # hidden_multiplier: [0, 2, 4, 8, 12, 16, 32, 64, 128, 256, 512]
+  # hidden_multiplier: [0, 2, 4, 8, 12, 16, 32, 64, 128, 256, 512]
+
+  noise_std_mult: [0.00001, 0.0001, 0.001, 0.01, 0.1, 1.0]
+  lr: [0.04, 0.01, 0.002, 0.004, 0.001, 0.0004, 0.0001]

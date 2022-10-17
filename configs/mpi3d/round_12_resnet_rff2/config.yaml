@@ -1,0 +1,22 @@
+
+dataset: [mpi3d]
+model_type: [resnet18]
+
+probe:
+  hidden_dim: [0]
+  hidden_layers: [0]
+  lr: [0.0002]
+  # hidden_dim: [16, 32, 64, 128, 256, 512, 1024, 2048, 4096]
+  # hidden_dim: [16, 32, 64, 128, 256, 512, 1024, 2048, 4096]
+  # hidden_dim: [16, 32, 64]
+  # hidden_dim: [128, 256, 512]
+  hidden_dim: [1024, 2048, 4096]
+
+  # rff_sigma_gain: [0.02, 0.01, 0.008]
+  # rff_sigma_gain: [0.08, 0.04, 0.02]
+  rff_sigma_gain: [0.2, 0.1, 0.08]
+  
+
+
+  # best 4096 - 0.1 sau 0.2
+  # best 16: 0.008 cat mai mic, cu atat mai bine

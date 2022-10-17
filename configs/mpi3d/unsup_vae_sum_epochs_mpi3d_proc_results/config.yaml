@@ -1,0 +1,7 @@
+
+dataset: [mpi3d]
+result_path: ["./results/2022Aug16-110733_unsup_vae_sum_epochs", "./results/2022Aug16-110750_unsup_vae_sum_epochs_bottle"]
+
+hsic:
+  xlatent: [True,False]
+  ylatent: [True,False]

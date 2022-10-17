@@ -48,12 +48,15 @@ def run(params):
             x = [0.001, 0.01, 0.1, 1.0, 10, 20, 100, 1000, 5000]
     # x = [0.001, 0.01, 0.1, 1.0, 10.0, 20.0, 100.0, 1000.0]
     sigma_hsic = [0.001, 0.01, 0.1, 1, 10, 100, 1000]
+    # sigma_hsic = [1, 10, 100]
     num_seeds = 5
     plot_train_hsic = params.plot_train_hsic
+    score_name = params.score_name
     #####################################################
     
-    labels = ['informativeness_train', 'informativeness_val', 'informativeness_test',
+    labels_dci = ['informativeness_train', 'informativeness_val', 'informativeness_test',
             'disentanglement', 'completeness'] #with python 3.8 we could have used .split() but here we have to use python 3.7
+    labels = ['train_accuracy', 'eval_accuracy']
     if s_x_latent== True:
         title_text_x =  'xlatent'
     else:
@@ -66,17 +69,25 @@ def run(params):
 
     hsic1= dict((str(el),[]) for el in sigma_hsic) # train
     hsic2= dict((str(el),[]) for el in sigma_hsic) # test
+    ###################for checking independence#############
+    # zz = dict((str(el),[]) for el in sigma_hsic)
+    # zrand = dict((str(el),[]) for el in sigma_hsic)
     if plot_train_hsic:
         num_curves = 5 + len(sigma_hsic)*2
     else:
         num_curves = 5 + len(sigma_hsic)
-
+        ###################for checking independence#############
+        # num_curves = len(sigma_hsic)*3
     color_key=cm.rainbow(np.linspace(0,1,num_curves))
     informativeness_train = []
     informativeness_val =[]
     informativeness_test = []
     disentanglement = []
     completeness = []
+    train_accuracy1 = []
+    eval_accuracy1 = []
+    train_accuracy2 = []
+    eval_accuracy2 = []
 
     for folder in tqdm(sorted(glob(path+"/*/", recursive=True))):
         # print(folder)
@@ -85,69 +96,115 @@ def run(params):
         informativeness_test_seeds = torch.zeros(num_seeds)
         disentanglement_seeds = torch.zeros(num_seeds)
         completeness_seeds = torch.zeros(num_seeds)
+        train_accuracy1_seeds = torch.zeros(num_seeds)
+        eval_accuracy1_seeds = torch.zeros(num_seeds)
+        train_accuracy2_seeds = torch.zeros(num_seeds)
+        eval_accuracy2_seeds = torch.zeros(num_seeds)
         hsic1_seed= dict((str(el),torch.zeros(num_seeds)) for el in sigma_hsic)
         hsic2_seed= dict((str(el),torch.zeros(num_seeds)) for el in sigma_hsic)
+        ###################for checking independence#############
+        # zz_seed = dict((str(el),torch.zeros(num_seeds)) for el in sigma_hsic)
+        # zrand_seed = dict((str(el),torch.zeros(num_seeds)) for el in sigma_hsic)
+
         for seed in range(num_seeds):
             for file in os.listdir(folder+str(seed)):
-                if file.endswith('.pickle') and 'dci' in file :
+                # if file.endswith('.pickle') and 'dci' in file :
+                #     results = from_pickle(os.path.join(folder+str(seed),file))
+                #     informativeness_train_seeds[seed]= results['informativeness_train']
+                #     informativeness_val_seeds[seed]= results['informativeness_val']
+                #     informativeness_test_seeds[seed]= results['informativeness_test']
+                #     disentanglement_seeds[seed]= results['disentanglement']
+                #     completeness_seeds[seed]= results['completeness']
+                if file.endswith('.pickle') and 'beta' in file.split('/')[-1] :
                     results = from_pickle(os.path.join(folder+str(seed),file))
-                    informativeness_train_seeds[seed]= results['informativeness_train']
-                    informativeness_val_seeds[seed]= results['informativeness_val']
-                    informativeness_test_seeds[seed]= results['informativeness_test']
-                    disentanglement_seeds[seed]= results['disentanglement']
-                    completeness_seeds[seed]= results['completeness']
-
+                    train_accuracy1_seeds[seed]= results['train_accuracy']
+                    eval_accuracy1_seeds[seed]= results['eval_accuracy']
+                if file.endswith('.pickle') and 'factor' in file.split('/')[-1] :
+                    results = from_pickle(os.path.join(folder+str(seed),file))
+                    train_accuracy2_seeds[seed]= results['train_accuracy']
+                    eval_accuracy2_seeds[seed]= results['eval_accuracy']
+                if file.endswith('.pickle') and 'dci' in file.split('/')[-1] :
+                    results = from_pickle(os.path.join(folder+str(seed),file))
+                    informativeness_train_seeds[seed] = results['informativeness_train']
+                    informativeness_val_seeds[seed] = results['informativeness_val']
+                    informativeness_test_seeds[seed] = results['informativeness_test']
+                    disentanglement_seeds[seed] = results['disentanglement']
+                    completeness_seeds[seed] = results['completeness']
             if s_x_latent:
                 if s_y_latent:
                     for file in os.listdir(folder+str(seed)):
-                        if file.endswith('_v3.pickle') and 'hsic' in file and "train" in file and 'xlatent' in file and 'ylatent' in file:
+                        if file.endswith('.pickle') and params.exp_params.hsic_reg_version in file and 'hsic' in file and "train" in file and 'xlatent' in file and 'ylatent' in file:
                             
                             results = from_pickle(os.path.join(folder+str(seed),file))
 
                             for sigma in sigma_hsic:
                                 hsic1_seed[str(sigma)][seed] = results[str(sigma)]
+                        
                     for file in os.listdir(folder+str(seed)):
-                        if file.endswith('_v3.pickle')  and 'hsic' in file and "test" in file and 'xlatent' in file and 'ylatent' in file:
+                        if file.endswith('.pickle') and params.exp_params.hsic_reg_version in file and 'hsic' in file and "test" in file and 'xlatent' in file and 'ylatent' in file:
                             results = from_pickle(os.path.join(folder+str(seed),file))
                             for sigma in sigma_hsic:
                                 hsic2_seed[str(sigma)][seed] = results[str(sigma)]
+                    print(hsic2_seed)
+                    ###################for checking independence#############
+                    # for file in os.listdir(folder+str(seed)):
+                    #     if file.endswith('_v4_comp_zM.pickle'):
+                            
+                    #         results = from_pickle(os.path.join(folder+str(seed),file))
+                    #         for sigma in sigma_hsic:
+                    #             print(str(sigma)+"_zM")
+                    #             print(results[str(sigma)])
+                    #             zz_seed[str(sigma)][seed] = results[str(sigma)]
+                    #     elif file.endswith('_v4_comp_rand.pickle'):
+                            
+                    #         results = from_pickle(os.path.join(folder+str(seed),file))
+                    #         for sigma in sigma_hsic:
+                    #             print(str(sigma)+"_rand")
+                    #             print(results[str(sigma)])
+                    #             zrand_seed[str(sigma)][seed] = results[str(sigma)]
+                                
+                    
                 else:
                     for file in os.listdir(folder+str(seed)):
-                        if file.endswith('_v3.pickle')  and 'hsic' in file and "train" in file and 'xlatent' in file and 'ylatent' not in file:
+                        if file.endswith('.pickle') and params.exp_params.hsic_reg_version in file and 'hsic' in file and "train" in file and 'xlatent' in file and 'ylatent' not in file:
                             results = from_pickle(os.path.join(folder+str(seed),file))
                             for sigma in sigma_hsic:
                                 hsic1_seed[str(sigma)][seed] = results[str(sigma)]
                     for file in os.listdir(folder+str(seed)):
-                        if file.endswith('_v3.pickle')  and 'hsic' in file and "test" in file and 'xlatent' in file and 'ylatent' not in file:
+                        if file.endswith('.pickle') and params.exp_params.hsic_reg_version in file and 'hsic' in file and "test" in file and 'xlatent' in file and 'ylatent' not in file:
                             results = from_pickle(os.path.join(folder+str(seed),file))
                             for sigma in sigma_hsic:
                                 hsic2_seed[str(sigma)][seed] = results[str(sigma)]
             else:
                 if s_y_latent:
                     for file in os.listdir(folder+str(seed)):
-                        if file.endswith('_v3.pickle')  and 'hsic' in file and "train" in file and 'xlatent' not in file and 'ylatent' in file:
+                        if file.endswith('.pickle')  and 'hsic' in file and "train" in file and 'xlatent' not in file and 'ylatent' in file:
                             results = from_pickle(os.path.join(folder+str(seed),file))
                             for sigma in sigma_hsic:
                                 hsic1_seed[str(sigma)][seed] = results[str(sigma)]
                     for file in os.listdir(folder+str(seed)):
-                        if file.endswith('_v3.pickle')  and 'hsic' in file and "test" in file and 'xlatent' not in file and 'ylatent' in file:
+                        if file.endswith('.pickle')  and 'hsic' in file and "test" in file and 'xlatent' not in file and 'ylatent' in file:
                             results = from_pickle(os.path.join(folder+str(seed),file))
                             for sigma in sigma_hsic:
                                 hsic2_seed[str(sigma)][seed] = results[str(sigma)]
                 else:
                     for file in os.listdir(folder+str(seed)):
-                        if file.endswith('_v3.pickle')  and 'hsic' in file and "train" in file and 'xlatent' not in file and 'ylatent' not in file:
+                        if file.endswith('.pickle')  and 'hsic' in file and "train" in file and 'xlatent' not in file and 'ylatent' not in file:
                             results = from_pickle(os.path.join(folder+str(seed),file))
                             
                             for sigma in sigma_hsic:
                                 hsic1_seed[str(sigma)][seed] = results[str(sigma)]
                     for file in os.listdir(folder+str(seed)):
-                        if file.endswith('_v3.pickle')  and 'hsic' in file and "test" in file and 'xlatent' not in file and 'ylatent' not in file:
+                        if file.endswith('.pickle')  and 'hsic' in file and "test" in file and 'xlatent' not in file and 'ylatent' not in file:
                             results = from_pickle(os.path.join(folder+str(seed),file))
                             
                             for sigma in sigma_hsic:
                                 hsic2_seed[str(sigma)][seed] = results[str(sigma)]
-
+        train_accuracy1.append(torch.std_mean(train_accuracy1_seeds))
+        eval_accuracy1.append(torch.std_mean(eval_accuracy1_seeds))
+        train_accuracy2.append(torch.std_mean(train_accuracy2_seeds))
+        eval_accuracy2.append(torch.std_mean(eval_accuracy2_seeds))
+        
         informativeness_train.append(torch.std_mean(informativeness_train_seeds))
         informativeness_val.append(torch.std_mean(informativeness_val_seeds))
         informativeness_test.append(torch.std_mean(informativeness_test_seeds))
@@ -156,7 +213,15 @@ def run(params):
         for sigma in sigma_hsic:
             hsic1[str(sigma)].append(torch.std_mean(hsic1_seed[str(sigma)]))
             hsic2[str(sigma)].append(torch.std_mean(hsic2_seed[str(sigma)]))
-    print(hsic2)
+            ###################for checking independence#############
+            # zz[str(sigma)].append(torch.std_mean(zz_seed[str(sigma)]))
+            # zrand[str(sigma)].append(torch.std_mean(zrand_seed[str(sigma)]))
+    # print(hsic2)
+    train_accuracy1 = np.array(train_accuracy1)
+    eval_accuracy1 = np.array(eval_accuracy1)
+    train_accuracy2 = np.array(train_accuracy2)
+    eval_accuracy2 = np.array(eval_accuracy2)
+    
     informativeness_train = np.array(informativeness_train)
     informativeness_val = np.array(informativeness_val)
     informativeness_test = np.array(informativeness_test)
@@ -165,42 +230,65 @@ def run(params):
     for sigma in sigma_hsic:
         hsic1[str(sigma)] = np.array(hsic1[str(sigma)])
         hsic2[str(sigma)] = np.array(hsic2[str(sigma)])
+        ###################for checking independence#############
+        # zz[str(sigma)] = np.array(zz[str(sigma)])
+        # zrand[str(sigma)] = np.array(zrand[str(sigma)])
 
     if 'bottle' in path:
-        plot_fig = plt.semilogy
+        plot_fig = plt.plot
     else:
-        plot_fig = plt.loglog
+        plot_fig = plt.semilogx
     # pdb.set_trace()
     plt.figure()
-    for i,(y,label) in enumerate(zip([informativeness_train, informativeness_val, informativeness_test,
-                disentanglement, completeness], labels)):
-        print(y.shape)
-        plot_fig(x,y[:,1], label = label, c=color_key[i])
-        plt.fill_between(x, y[:,1]-y[:,0], y[:,1]+y[:,0], color=adjust_lightness(color_key[i],amount=0.5), alpha=0.3)
-    if plot_train_hsic:
-        for j,key in enumerate(hsic1.keys()):
-            plot_fig(x,hsic1[key][:,1], label = r'HSIC_train $\sigma^2$='+key, c=color_key[i+j+1])
-            plt.fill_between(x, hsic1[key][:,1]-hsic1[key][:,0], hsic1[key][:,1]+hsic1[key][:,0], color=adjust_lightness(color_key[i+j+1],amount=0.5),alpha=0.3)
-        for k,key in enumerate(hsic2.keys()):
-            plot_fig(x,hsic2[key][:,1], label = r'HSIC_test $\sigma^2$='+key, c=color_key[i+j+k+1])
-            plt.fill_between(x, hsic2[key][:,1]-hsic2[key][:,0], hsic2[key][:,1]+hsic2[key][:,0], color=adjust_lightness(color_key[i+j+k+1],amount=0.5),alpha=0.3)
-    else:
-        for k,key in enumerate(hsic2.keys()):
-            plot_fig(x,hsic2[key][:,1], label = r'HSIC_test $\sigma^2$='+key, c=color_key[i+k+1])
-            plt.fill_between(x, hsic2[key][:,1]-hsic2[key][:,0], hsic2[key][:,1]+hsic2[key][:,0], color=adjust_lightness(color_key[i+k+1],amount=0.5),alpha=0.3)
     
+    for i,(y,label) in enumerate(zip([train_accuracy1,eval_accuracy1], labels)):
+        print(y)
+        
+        plot_fig(x,y[:,1], label = 'beta '+label, c=color_key[i])
+        plt.fill_between(x, y[:,1]-y[:,0], y[:,1]+y[:,0], color=adjust_lightness(color_key[i],amount=0.5), alpha=0.3)
+    for j,(y,label) in enumerate(zip([train_accuracy2,eval_accuracy2], labels)):
+        print(y)
+        plot_fig(x,y[:,1], label = 'factor '+label, c=color_key[i+j+1])
+        plt.fill_between(x, y[:,1]-y[:,0], y[:,1]+y[:,0], color=adjust_lightness(color_key[i+j+1],amount=0.5), alpha=0.3)
+    
+    for k,(y,label) in enumerate(zip([informativeness_train, informativeness_val, informativeness_test,
+                disentanglement, completeness], labels_dci)):
+        plot_fig(x,y[:,1], label = 'dci '+label, c=color_key[i+j+k+2])
+        plt.fill_between(x, y[:,1]-y[:,0], y[:,1]+y[:,0], color=adjust_lightness(color_key[i+j+k+2],amount=0.5), alpha=0.3)
+    # if plot_train_hsic:
+    #     for j,key in enumerate(hsic1.keys()):
+    #         plot_fig(x,hsic1[key][:,1], label = r'HSIC_train $\sigma^2$='+key, c=color_key[i+j+1])
+    #         plt.fill_between(x, hsic1[key][:,1]-hsic1[key][:,0], hsic1[key][:,1]+hsic1[key][:,0], color=adjust_lightness(color_key[i+j+1],amount=0.5),alpha=0.3)
+    #     for k,key in enumerate(hsic2.keys()):
+    #         plot_fig(x,hsic2[key][:,1], label = r'HSIC_test $\sigma^2$='+key, c=color_key[i+j+k+1])
+    #         plt.fill_between(x, hsic2[key][:,1]-hsic2[key][:,0], hsic2[key][:,1]+hsic2[key][:,0], color=adjust_lightness(color_key[i+j+k+1],amount=0.5),alpha=0.3)
+    # else:
+    #     for k,key in enumerate(hsic2.keys()):
+    #         plot_fig(x,hsic2[key][:,1], label = r'HSIC_test $\sigma^2$='+key, c=color_key[i+k+1])
+    #         plt.fill_between(x, hsic2[key][:,1]-hsic2[key][:,0], hsic2[key][:,1]+hsic2[key][:,0], color=adjust_lightness(color_key[i+j+k+2],amount=0.5),alpha=0.3)
+        ###################for checking independence#############
+        # for l,key in enumerate(zz.keys()):
+        #     plot_fig(x,zz[key][:,1], label = r'HSIC(z,zM) $\sigma^2$='+key, c=color_key[i+k+l+2])
+        #     plt.fill_between(x, zz[key][:,1]-zz[key][:,0], zz[key][:,1]+zz[key][:,0], color=adjust_lightness(color_key[i+k+l+2],amount=0.5),alpha=0.3)
+        # for m,key in enumerate(zrand.keys()):
+        #     plot_fig(x,zrand[key][:,1], label = r'HSIC(z,$\mathcal{N}(0,I)$) $\sigma^2$='+key, c=color_key[i+k+l+m+3])
+        #     plt.fill_between(x, zrand[key][:,1]-zrand[key][:,0], zrand[key][:,1]+zrand[key][:,0], color=adjust_lightness(color_key[i+k+l+m+3],amount=0.5),alpha=0.3)
+        
     if 'bottle' in path:
         plt.xlabel('latent_dim')
     else:
         plt.xlabel('kld_weight')
     plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
 
-    plt.title(r'DCI&HSIC' + title_text_x + title_text_y)
+    # plt.title(score_name + '&HSIC' + title_text_x + title_text_y)
+    plt.title('dci_beta_factor')
     if plot_train_hsic:
-        plt.savefig(os.path.join(path,'DCI_HSIC_train&test_num_reparam10_div1000'+ title_text_x + title_text_y +'_v3.png'),
+        plt.savefig(os.path.join(path,score_name +'_HSIC_'+ title_text_x + title_text_y +'.png'),
                                     bbox_inches='tight')
     else:
-        plt.savefig(os.path.join(path,'DCI_HSIC_test_num_reparam10_div1000'+ title_text_x + title_text_y +'_v3.png'),
+        # plt.savefig(os.path.join(path,score_name +'_HSIC_'+ title_text_x + title_text_y +'.png'),
+        #                             bbox_inches='tight')
+        plt.savefig(os.path.join(path,'dci_beta_factor.png'),
                                     bbox_inches='tight')
 
 if __name__ == "__main__":

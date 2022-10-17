@@ -222,29 +222,7 @@ def run(params):
             model = RawData(latent_dim=number_of_channels * 64 * 64)
 
         elif params.model_type == 'noisy_labels':
-            noise_std = 0.1 #params.probe.noise_std_mult
-            # pdb.set_trace()
-            # noise_std = 0.0 #1
-            model = NoisyLabels(
-                        number_of_classes=number_targets, 
-                        noise_std=noise_std
-            )
-        elif params.model_type == 'random_linear_mix_labels':
-            noise_std = 0.003 * params.probe.noise_std_mult
-            model = LinearMixLabels(
-                        number_of_classes=number_targets, 
-                        noise_std=noise_std,
-                        mix_type='random_linear'
-            )
-        elif 'almost_uniform_mix_labels' in params.model_type:
-            # noise_std = 0.003 * params.probe.noise_std_mult
-            noise_std = params.probe.noise_std_mult
-            # noise_std = 0.04
-
-            model = LinearMixLabels(
-                        number_of_classes=number_targets, 
-                        noise_std=noise_std,
-                        mix_type=params.model_type
+            noise_std = 0.1 #params.probeget_scoresdel_type
             )
 
             model_file = f'../checkpoints/{params.dataset}_almost_uniform_mix_noise_diag_{noise_std}.pt'

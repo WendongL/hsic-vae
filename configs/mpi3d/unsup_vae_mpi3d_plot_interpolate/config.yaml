@@ -1,0 +1,2 @@
+result_path: ["./results/2022Aug19-164633_unsup_vae_sum_epochs_mpi3d_bottle", "./results/2022Aug19-164619_unsup_vae_sum_epochs_mpi3d_kldweights","./results/2022Aug16-110750_unsup_vae_sum_epochs_bottle","./results/2022Aug16-110733_unsup_vae_sum_epochs"]
+dataset: [mpi3d]

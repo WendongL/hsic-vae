@@ -1,2 +1,2 @@
-result_path: ["./results/2022Aug11-170838_unsup_vae_dsprites", "./results/2022Aug12-134358_unsup_vae_dsprites_bottle_kl100"]
+result_path: ["./results/2022Aug19-153607_unsup_vae_dsprites_klweights","./results/2022Aug19-153639_unsup_vae_dsprites_bottle"]
 dataset: [dsprites]

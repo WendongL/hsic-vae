@@ -1,0 +1,7 @@
+# result_path: ['./results/2022Aug19-153639_unsup_vae_dsprites_bottle','./results/2022Aug19-153607_unsup_vae_dsprites_klweights']
+result_path: ['./results/2022Aug19-153639_unsup_vae_dsprites_bottle']
+score_name: ['hsic','beta','factor']
+# plot_train_hsic: [True, False]
+# hsic:
+#   x_latent: [True, False]
+#   y_latent: [True, False]

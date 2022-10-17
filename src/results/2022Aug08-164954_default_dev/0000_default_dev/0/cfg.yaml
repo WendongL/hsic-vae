@@ -1,0 +1,75 @@
+cached_representations: false
+cfg_id: 0
+dataset: dsprites
+dataset_path: ./data/disent_indommain/
+dry-run: false
+full_title: 2022Aug08-164954_default_dev
+log_interval: 10
+model:
+  batch_size: 64
+  epochs: 100
+  gamma: 0.1
+  lr: 0.001
+  optim_steps:
+  - 70
+  - 90
+model_type: vae
+name: pretrained
+noise_std: 0.0
+num_workers: 2
+out_dir: ./results/2022Aug08-164954_default_dev/0000_default_dev/0
+pretrained: true
+probe:
+  batch_size: 128
+  cross_ent_mult: 1.0
+  data_fraction: 1.0
+  epochs: 100
+  gamma: 0.1
+  hidden_layers: 2
+  hidden_multiplier: 128
+  lr: 0.0004
+  max_depth: 50
+  max_leaf_nodes: None
+  noise_std_mult: 1.0
+  optim_steps:
+  - 70
+  - 90
+  rf_lr: 0.1
+  type: tree_ens_xgb
+representation_dataset_path: ./
+resnet_representation_dataset_path: ../checkpoints/resnet18/dsprites_resnet18_pretrained_dataset
+run_id: 0
+save_model: true
+save_representation_datasets: true
+seed: 1
+supervision: false
+title: default_dev
+vae:
+  data_params:
+    data_path: Data/
+    num_workers: 4
+    patch_size: 64
+    train_batch_size: 64
+    val_batch_size: 64
+  exp_params:
+    LR: 0.005
+    kld_weight: 1.0e-05
+    manual_seed: 1265
+    scheduler_gamma: 0.95
+    weight_decay: 0.0
+  logging_params:
+    name: VAE
+    save_dir: logs/
+  model_params:
+    beta: 1.0
+    in_channels: 1
+    latent_dim: 10
+    loss_type: H
+    model_type: small
+    name: BetaVAE
+    recons_type: bce
+  trainer_params:
+    gpus:
+    - 0
+    max_epochs: 100
+vae_representation_dataset_path: /home/anicolicioiu/data/models/results_liftoff_loss_capacity_discrete_and_c_good/2022May19-125638_unsup_vae/

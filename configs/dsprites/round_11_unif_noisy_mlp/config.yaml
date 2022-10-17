@@ -1,0 +1,12 @@
+
+dataset: [sprites]
+model_type: [almost_uniform_mix_labels, noisy_labels]
+
+probe:
+  data_fraction: [1.0]
+  # hidden_dim: [0, 14, 21, 28, 33, 47, 75, 103, 131,  243, 467, 915 , 1811, 3603]
+  hidden_dim: [0, 191, 197, 209, 233, 281, 377, 569, 953, 1721, 3257]
+  
+  num_hidden_layers: [2]
+  lr: [0.002]
+  

@@ -1,0 +1,16 @@
+dataset: [mpi3d]
+pretrained: [True]
+model_type: [resnet18]
+
+probe:
+  # hidden_multiplier: [0, 2, 4, 8, 12, 16, 32, 64, 128, 256, 512]
+  cross_ent_mult: [10, 1.0, 0.1, 0.01, 0.001, 0.0001]
+  hidden_multiplier: [128]
+
+  # hidden_multiplier: [2, 4, 8, 12, 16, 64, 256, 512]
+  lr: [0.0004]
+  batch_size: [128]
+
+  # hidden_multiplier: [0, 32, 128]
+  # lr: [ 0.1, 0.01, 0.001]
+  # batch_size: [32, 64, 128]

@@ -1,6 +1,8 @@
 import sys
 sys.path.insert(0, './../')
 import os
+
+os.environ['CUDA_LAUNCH_BLOCKING'] = "1"
 import yaml
 import argparse
 import numpy as np
@@ -9,6 +11,8 @@ from PyTorchVAE.models.beta_vae import BetaVAE, SmallBetaVAE
 from PyTorchVAE.models.hsicbeta_vae import HsicBetaVAE, SmallHsicBetaVAE
 from PyTorchVAE.experiment import VAEXperiment
 from PyTorchVAE.experiment_hsicbeta import VAEXperiment_hsicbeta
+
+
 import torch.backends.cudnn as cudnn
 from pytorch_lightning import Trainer
 from pytorch_lightning.loggers import TensorBoardLogger
@@ -81,6 +85,7 @@ def run(params):
         model = SmallHsicBetaVAE(**config.model_params.__dict__)
         experiment = VAEXperiment_hsicbeta(model, config.exp_params)
     elif config.model_params.model_type == 'bighsicbeta':
+        model = HsicBetaVAE(**config.model_params.__dict__)
         experiment = VAEXperiment_hsicbeta(model, config.exp_params)
     
     
@@ -97,7 +102,7 @@ def run(params):
     imagenet_normalise = True if 'resnet' in params.model_type else False
     dataloader_train = load_dataset.load_dataset(
         dataset_name=params.dataset,  # datasets are dsprites, shapes3d and mpi3d
-        variant='random',  # split types are random, composition, interpolation, extrapolation
+        variant=params.variant,  # split types are random, composition, interpolation, extrapolation
         mode='train',
         dataset_path=params.dataset_path, 
         batch_size=params.probe.batch_size, 
@@ -109,7 +114,7 @@ def run(params):
 
     dataloader_val = load_dataset.load_dataset(
         dataset_name=params.dataset,  # datasets are dsprites, shapes3d and mpi3d
-        variant='random',  # splittrainer_params types are random, composition, interpolation, extrapolation
+        variant=params.variant,  # splittrainer_params types are random, composition, interpolation, extrapolation
         mode='test',
         dataset_path=params.dataset_path, 
         batch_size=params.probe.batch_size, 
@@ -121,7 +126,7 @@ def run(params):
 
     dataloader_test = load_dataset.load_dataset(
         dataset_name=params.dataset,  # datasets are dsprites, shapes3d and mpi3d
-        variant='random',  # split types are random, composition, interpolation, extrapolation
+        variant=params.variant,  # split types are random, composition, interpolation, extrapolation
         mode='test',
         dataset_path=params.dataset_path, 
         batch_size=params.probe.batch_size, 
@@ -170,7 +175,7 @@ def run(params):
 
         model.eval()
 
-        Path(params.out_dir).mkdir(parents=True, exist_ok=True)  
+        Path(params.out_dir).mkdir(parents=True, exist_ok=True)
         torch.save(model.state_dict(), savename +'.pt')
     else:
         ckpt = torch.load(checkpoint_path)
@@ -184,46 +189,35 @@ def run(params):
         device = 'cuda'
         model = model.to(device)
 
-        # w_save_representation_dataset(device, model, dataloader_train.dataset, f'{savename}_dataset_train')
-        # w_save_representation_dataset(device, model, dataloader_test.dataset, f'{savename}_dataset_test')
-        # w_save_representation_dataset(device, model, dataloader_val.dataset, f'{savename}_dataset_val')
-        from  loss_capacity.train_model_random_forest import train_test_random_forest
-        # pdb.set_trace()
-        num_probe_params, probe_train_score, probe_val_score, probe_test_score, dci_scores_trees = train_test_random_forest(
-                model=model, 
-                dataloader_train=dataloader_train, 
-                dataloader_val=dataloader_val, 
-                dataloader_test=dataloader_test, 
-                method='rf',#params.probe.type,
-                max_leaf_nodes=params.probe.max_leaf_nodes,
-                max_depth=params.probe.max_depth,
-                num_trees=params.probe.num_trees,
-                seed = params.seed * params.run_id,
-                lr = params.probe.rf_lr,
-                epochs = params.probe.epochs, 
-                log_interval =  params.log_interval, save_model = params.save_model,
-                train_name='probe_trees',
-                tb_writer=None, eval_model=True, savefolder=params.out_dir,
-                device=device,
-                data_fraction=params.probe.data_fraction,
-                use_sage=False
-                )
+        save_representation_dataset(device, model, dataloader_train.dataset, f'{savename}_dataset_train')
+        save_representation_dataset(device, model, dataloader_test.dataset, f'{savename}_dataset_test')
+        save_representation_dataset(device, model, dataloader_val.dataset, f'{savename}_dataset_val')
+        # from  loss_capacity.train_model_random_forest import train_test_random_forest
+        # # pdb.set_trace()
+        # num_probe_params, probe_train_score, probe_val_score, probe_test_score, dci_scores_trees = train_test_random_forest(
+        #         model=model, 
+        #         dataloader_train=dataloader_train, 
+        #         dataloader_val=dataloader_val, 
+        #         dataloader_test=dataloader_test, 
+        #         method='rf',#params.probe.type,
+        #         max_leaf_nodes=params.probe.max_leaf_nodes,
+        #         max_depth=params.probe.max_depth,
+        #         num_trees=params.probe.num_trees,
+        #         seed = params.seed * params.run_id,
+        #         lr = params.probe.rf_lr,
+        #         epochs = params.probe.epochs, 
+        #         log_interval =  params.log_interval, save_model = params.save_model,
+        #         train_name='probe_trees',
+        #         tb_writer=None, eval_model=True, savefolder=params.out_dir,
+        #         device=device,
+        #         data_fraction=params.probe.data_fraction,
+        #         use_sage=False
+        #         )
 
         
-        with open(os.path.join(params.out_dir, f'dci_klw{config.exp_params.kld_weight}_latent_{config.model_params.latent_dim}.pickle'), 'wb') as f:
-            pickle.dump(dci_scores_trees, f)
-# def w_save_representation_dataset(device, model, dataset, path):
-#     pdb.set_trace()
-#     print(f'saving representation dataset at: {path}')
-#     batch_size = 256
-#     dataloader = torch.utils.data.DataLoader(dataset,
-#         batch_size=batch_size,
-#         shuffle=False,
-#         num_workers=4)
+        # with open(os.path.join(params.out_dir, f'dci_klw{config.exp_params.kld_weight}_latent_{config.model_params.latent_dim}.pickle'), 'wb') as f:
+        #     pickle.dump(dci_scores_trees, f)
 
-#     inputs, targets = next(iter(dataloader))
-#     feats = model.encode(inputs.to(device))
-#     # outputs = model.decode(feats)
 
 
 # For debug of saving models

@@ -1,6 +1,0 @@
-Traceback (most recent call last):
-  File "train_unsupervised_model.py", line 415, in <module>
-    run(parse_opts())
-  File "/home/wliang/miniconda3/envs/vae/lib/python3.7/site-packages/liftoff/__init__.py", line 31, in parse_opts
-    raise RuntimeError("Out dir does not exist.")
-RuntimeError: Out dir does not exist.

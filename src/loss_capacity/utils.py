@@ -16,7 +16,7 @@ import torch.nn as nn
 # TK = TypeVar("TK")
 # TV = TypeVar("TV")
 import pdb
-from loss_capacity.functions import HSIC, HSIC_
+from loss_capacity.functions import HSIC, HSIC_, hsic_gam
 import pickle
 
 def list2tuple_(opt: Namespace) -> Namespace:
@@ -154,7 +154,7 @@ def save_representation_dataset(device, model, dataset, path):
             batch_size=batch_size,
             shuffle=False,
             num_workers=4)
-        pdb.set_trace()
+        # pdb.set_trace()
         inputs, targets = next(iter(dataloader))
         feats = model.encode(inputs.to(device))
         all_feats = np.zeros((len(dataset), feats.shape[1])).astype(np.float32)
@@ -274,7 +274,7 @@ def hsic_batch(real_img, experiment, s_x=1, s_y=1, device='cuda', batch_size=512
                 num_sample_reparam = 1, no_grad = True):
             # num_sample_reparam: num of samples of reparamatrizing z using mu and sigma
     experiment.model.to(device)
-    flat = torch.nn.Flatten()
+    flat = torch.nn.Flatten() # flatten dim: from 1 to -1
     
     hsic_score = 0
     for i in range(num_sample_reparam):
@@ -297,7 +297,7 @@ def hsic_batch_v2(real_img, experiment, s_x=1, s_y=1, device='cuda',
             # calculate HSIC(Z(X), X-dec(Z(X)))
             # num_sample_reparam: num of samples of reparamatrizing z using mu and sigma
             # num_sample_reparam is thus the dimension of the kernels of HSIC.
-            # we only define the calculation of HSIC for one x.
+            # we only define the calculation of HSIC for one batch of x.
     experiment.model.to(device)
     flat = torch.nn.Flatten(start_dim=-3, end_dim=-1) # only flatten the last 3 dim
     batch_size = real_img.shape[0]
@@ -328,6 +328,87 @@ def hsic_batch_v2(real_img, experiment, s_x=1, s_y=1, device='cuda',
     hsic_score = HSIC_(feats, inputs - outputs, s_x, s_y, no_grad = no_grad)
 
     return hsic_score
+
+def hsic_v3(real_img, experiment, s_x=1, s_y=1, device='cuda',
+                num_sample_reparam = 1, no_grad = True, threshold = False):
+            # calculate HSIC(Z(X), X-dec(Z(X)))
+            # num_sample_reparam: num of samples of reparamatrizing z using mu and sigma
+            # num_sample_reparam is thus the dimension of the kernels of HSIC.
+            # we only define the calculation of HSIC for one single x.
+    experiment.model.to(device)
+    flat = torch.nn.Flatten(start_dim=-3, end_dim=-1) # only flatten the last 3 dim
+
+    # print('real_img', real_img.shape)
+
+    inputs = real_img.to(device).unsqueeze(0)
+    feats = torch.zeros(num_sample_reparam, experiment.model.latent_dim)
+    outputs = torch.zeros(num_sample_reparam, inputs.shape[1], inputs.shape[2], inputs.shape[3])
+    # print('outputs',outputs.shape)
+    # pdb.set_trace()
+    feats = feats.to(device)
+    outputs = outputs.to(device)
+    for i in range(num_sample_reparam):
+        feats[i, :] = experiment.model.encode(inputs)
+        # print('outputs[:, i, :, :]',outputs[:, i, :, :].shape)
+        # print('experiment.model.decode(torch.squeeze(feats[:, i, :]))',experiment.model.decode(torch.squeeze(feats[:, i, :])).shape)
+        print(feats.shape)
+        outputs[i, :, :, :] = experiment.model.decode(feats[i, :])##########
+    
+    # pdb.set_trace()
+    inputs = inputs.repeat(num_sample_reparam, 1, 1, 1) # repeat batch_size times H
+    inputs = flat(inputs)
+    outputs = flat(outputs)
+    inputs = inputs.detach()
+    feats = feats.detach()
+    outputs = outputs.detach()
+    
+    if threshold:
+        feats = feats.cpu().numpy()
+        inputs = inputs.cpu().numpy()
+        outputs = outputs.cpu().numpy()
+        hsic_score = hsic_gam(feats, inputs - outputs, s_x, s_y)
+    else:
+        hsic_score = HSIC(feats, inputs - outputs, s_x, s_y, no_grad = no_grad)
+
+    return hsic_score # if threshold, hsic_score is 2-dimension.
+
+
+def hsic_batch_v2_comp(a, experiment, s_x=1, s_y=1, device='cuda',
+                num_sample_reparam = 1, no_grad = True, compare = 'zM'):
+            # calculate HSIC(Z(X), X-dec(Z(X)))
+            # num_sample_reparam: num of samples of reparamatrizing z using mu and sigma
+            # num_sample_reparam is thus the dimension of the kernels of HSIC.
+            # we only define the calculation of HSIC for one x.
+    experiment.model.to(device)
+    flat = torch.nn.Flatten(start_dim=-3, end_dim=-1) # only flatten the last 3 dim
+    batch_size = a.shape[0]
+    # print('real_img', real_img.shape)
+
+    inputs_a = a.to(device)
+    feats_a = torch.zeros(batch_size, num_sample_reparam, experiment.model.latent_dim)
+    feats_a = feats_a.to(device)
+    for i in range(num_sample_reparam):
+        feats_a[:, i, :] = experiment.model.encode(inputs_a)
+    inputs_a = inputs_a.unsqueeze(1).repeat(1, num_sample_reparam, 1, 1, 1) # repeat batch_size times H
+    inputs_a = flat(inputs_a)
+    inputs_a = inputs_a.detach()
+    feats_a = feats_a.detach()
+
+    if compare == 'zM':
+
+        M = torch.eye(experiment.model.latent_dim, a.shape[-1]).to(device) #D>>d, we only need to embed z onto the last dim of the second compared variable.
+        zM = torch.matmul(feats_a,M) #[batch_size, num_sample_reparam, a.shape[-1]]
+        # we cannot use num_sample_reparam data in z, since we do not have that in our original tensor x.
+        b = zM.unsqueeze(2).unsqueeze(3).repeat(1, 1, a.shape[1], a.shape[2], 1)
+        b = flat(b)
+    elif compare == 'rand':
+        b = torch.randn(a.shape).to(device)
+        b = b.unsqueeze(1).repeat(1, num_sample_reparam, 1, 1, 1) 
+        b = flat(b)
+    hsic_score = HSIC_(feats_a, b, s_x, s_y, no_grad = no_grad)
+
+    return hsic_score
+
 
 def from_pickle(path): # load something
     thing = None

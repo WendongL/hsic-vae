@@ -1,0 +1,13 @@
+
+dataset: [mpi3d]
+# model_type: [raw_data, noisy_labels, almost_uniform_mix_labels, resnet18, vae ]
+# model_type: [raw_data, resnet18 ]
+model_type: [almost_uniform_mix_labels, noisy_labels]
+
+probe:
+  hidden_multiplier: [0, 2, 4]
+  lr: [0.001, 0.002, 0.004, 0.01, 0.04, 0.1, 0.4, 0.8, 1.0, 2.0, 4.0]
+  noise_std_mult: [0.04]
+  # hidden_multiplier: [0]
+  # lr: [0.8, 1.0, 2.0]
+  # noise_std_mult: [0.04]

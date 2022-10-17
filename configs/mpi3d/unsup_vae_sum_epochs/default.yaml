@@ -13,10 +13,10 @@ vae_representation_dataset_path: /home/anicolicioiu/data/models/results_liftoff_
 
 num_workers: 2
 
-batch_size: 64
-epochs: 100
-lr: 0.001
-gamma: 0.7 # Learning rate step gamma (default: 0.7)
+# batch_size: 64
+# epochs: 100
+# lr: 0.001
+# gamma: 0.7 # Learning rate step gamma (default: 0.7)
 dry-run: False
 seed: 1
 log_interval: 10 # log every N batches
@@ -42,7 +42,6 @@ probe:
   data_fraction: 1.0
   max_leaf_nodes: None
   max_depth: 50
-  num_trees: 100
   hidden_layers: 2
   hidden_multiplier: 128 # size of the hidden layer (multiplier x num_factors) (default: 16)
   rf_lr: 0.1
@@ -76,12 +75,12 @@ vae:
     LR: 0.005
     weight_decay: 0.0
     scheduler_gamma: 0.95
-    kld_weight: 1 #0.00025
+    kld_weight: 0.00001 #0.00025
     manual_seed: 1265
 
   trainer_params:
     gpus: [0]
-    max_epochs: 40
+    max_epochs: 100
 
   logging_params:
     save_dir: "logs/"

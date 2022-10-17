@@ -78,3 +78,14 @@ print('xy HSIC = ', HSIC_(x,y,s_x = 10, s_y=10))
 #         0.0029, 0.0029, 0.0027, 0.0028, 0.0028, 0.0028, 0.0028, 0.0028, 0.0028,
 #         0.0028, 0.0028, 0.0029, 0.0029, 0.0029, 0.0030, 0.0028, 0.0028, 0.0028,
 #         0.0029], device='cuda:0')
+
+print('xx HSIC = ', HSIC_(x,x,s_x = 1000, s_y=1000))
+print('xx HSIC = ', HSIC_(x,x,s_x = 100, s_y=100))
+print('xx HSIC = ', HSIC_(x,x,s_x = 10, s_y=10))
+
+# xy HSIC =  tensor(4.7645e-06, device='cuda:0')
+# xy HSIC =  tensor(0.0003, device='cuda:0')
+# xy HSIC =  tensor(0.0028, device='cuda:0')
+# xx HSIC =  tensor(1.9914e-05, device='cuda:0')
+# xx HSIC =  tensor(0.0016, device='cuda:0')
+# xx HSIC =  tensor(0.0260, device='cuda:0')

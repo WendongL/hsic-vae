@@ -29,7 +29,7 @@ supervision: False
 pretrained: True
 noise_std: 0.0 
 save_representation_datasets: True
-result_path: "./results/2022Aug11-170838_unsup_vae_dsprites"
+result_path: "./results/2022Sep04-203445_unsup_vae_dsprites_hsicbetavae"
 
 model:
   lr: 0.001
@@ -64,7 +64,7 @@ vae:
     loss_type: 'H'
     beta: 1.
     recons_type: 'bce'
-    model_type: 'small' # small / big
+    model_type: 'smallhsicbeta' # small / big
 
   data_params:
     data_path: "Data/"

@@ -1,0 +1,46 @@
+name: pretrained
+
+######################### dataset parameters #########################
+# dataset containing images and original targets
+dataset: mpi3d # dsprites / shapes3d / mpi3d
+dataset_path: /home/anicolicioiu/data/disent_indommain/
+cached_representations: True
+# dataset containing extracted reprentations and processed targets
+representation_dataset_path: ../checkpoints/resnet18/mpi3d_resnet18_pretrained_dataset
+num_workers: 4
+
+# batch_size: 64
+# epochs: 100
+# lr: 0.001
+# gamma: 0.7 # Learning rate step gamma (default: 0.7)
+dry-run: False
+seed: 1
+log_interval: 10 # log every N batches
+save_model: True
+######################### model parameters #########################
+# model used for obtaining the representations chose from 
+# [raw_data/ noisy_labels / random_linear_mix_labels / noisy_uniform_mix_labels / conv_net]
+model_type: resnet18 
+supervision: False
+pretrained: True
+noise_std: 0.0 
+save_representation_datasets: False
+model:
+  lr: 0.001
+  epochs: 100
+  batch_size: 64
+  gamma: 0.1 # Learning rate step gamma (default: 0.7)
+  optim_steps: [70, 90]
+
+######################### probe parameters #########################
+
+probe:
+  hidden_layers: 2
+  hidden_multiplier: 16 # size of the hidden layer (multiplier x num_factors) (default: 16)
+  lr: 0.001
+  epochs: 100
+  batch_size: 256
+  gamma: 0.1
+  optim_steps: [70, 90]
+  noise_std_mult: 1.0
+  cross_ent_mult: 1.0

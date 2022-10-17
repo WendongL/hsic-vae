@@ -1,0 +1,8 @@
+result_path: ["./results/2022Aug19-164633_unsup_vae_sum_epochs_mpi3d_bottle", "./results/2022Aug19-164619_unsup_vae_sum_epochs_mpi3d_kldweights"]
+dataset: [mpi3d]
+
+hsic:
+  xlatent: [True,False]
+  ylatent: [True,False]
+  div_subsample: [100]
+  num_sample_reparam: [10]

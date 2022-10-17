@@ -1,0 +1,9 @@
+result_path: './results/2022Aug19-153607_unsup_vae_dsprites_klweights'
+plot_train_hsic: False
+num_seeds: 3
+score_name: 'factor'
+hsic:
+  x_latent: True
+  y_latent: True
+exp_params:
+  hsic_reg_version: 'v1'

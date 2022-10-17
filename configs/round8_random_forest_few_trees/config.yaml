@@ -1,0 +1,15 @@
+dataset: [mpi3d]
+# pretrained: [True]
+model_type: [raw_data, resnet18, almost_uniform_mix_labels, vae] # ,raw_data, resnet18, noisy_labels, almost_uniform_mix_labels]
+
+probe:
+  data_fraction: [1.0]
+  type: [tree_ens_rf] # MLP_reg / MLP_reg_cl / tree_ens_hgb/ tree_ens_rf / tree_ens_xgb
+  # tree_ensamble_method: 
+  # max_leaf_nodes: [200, 800, 1600, 3200]
+  # max_depth: [1, 2, 3, 4, 8, 10, 12, 14, 16, 18, 20, 32, 64, 128]
+  max_depth: [1, 8, 32]
+  num_trees: [1, 10]
+
+
+

@@ -1,0 +1,14 @@
+
+dataset: [mpi3d]
+model_type: [noisy_labels, almost_uniform_mix_labels, resnet18, vae ]
+# model_type: [raw_data]
+
+probe:
+  data_fraction: [1.0]
+  # hidden_multiplier: [0, 2, 4, 8, 12, 16, 32, 64, 128, 256, 512]
+  # hidden_multiplier: [2, 2.5, 3]
+  # hidden_dim = [0, 33, 47, 75, 103, 131,  243, 467, 915, 1811, 3603]
+  hidden_dim: [7, 14, 21]
+
+  num_hidden_layers: [2]
+  lr: [0.0002]

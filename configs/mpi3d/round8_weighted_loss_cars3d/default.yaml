@@ -1,0 +1,54 @@
+name: pretrained
+
+######################### dataset parameters #########################
+# dataset containing images and original targets
+dataset: cars3d # dsprites / shapes3d / mpi3d / cars3d
+dataset_path: ./data/disent_indommain/
+cached_representations: True
+# dataset containing extracted reprentations and processed targets
+representation_dataset_path: ./
+resnet_representation_dataset_path: ../checkpoints/resnet18/cars3d_resnet18_pretrained_dataset
+vae_representation_dataset_path: /home/anicolicioiu/data/models/results_liftoff_loss_capacity_discrete_and_c_good/2022May17-170014_unsup_vae/
+
+
+num_workers: 2
+
+# batch_size: 64
+# epochs: 100
+# lr: 0.001
+# gamma: 0.7 # Learning rate step gamma (default: 0.7)
+dry-run: False
+seed: 1
+log_interval: 10 # log every N batches
+save_model: True
+######################### model parameters #########################
+# model used for obtaining the representations chose from 
+# [raw_data/ noisy_labels / random_linear_mix_labels / almost_uniform_mix_labels / conv_net]
+model_type: resnet18 
+supervision: False
+pretrained: True
+noise_std: 0.0 
+save_representation_datasets: False
+model:
+  lr: 0.001
+  epochs: 100
+  batch_size: 64
+  gamma: 0.1 # Learning rate step gamma (default: 0.7)
+  optim_steps: [70, 90]
+
+######################### probe parameters #########################
+
+probe:
+  type: MLP_reg # MLP_reg / MLP_reg_cl / random_forest_reg_cl 
+  data_fraction: 1.0
+  max_leaf_nodes: 200
+  max_depth: 50
+  hidden_layers: 2
+  hidden_multiplier: 16 # size of the hidden layer (multiplier x num_factors) (default: 16)
+  lr: 0.001
+  epochs: 100
+  batch_size: 128
+  gamma: 0.1
+  optim_steps: [70, 90]
+  noise_std_mult: 1.0
+  cross_ent_mult: 1.0
