@@ -1,0 +1,19 @@
+
+dataset: [dsprites]
+vae: 
+  exp_params:
+#     # kld_weight: [0.01, 0.1, 1.0, 10, 100]
+#     kld_weight: [1.0, 100.0]
+      alpha: [0.0, 10000.0, 100000.0]
+model_type: [vae]
+variant: ['random', 'composition', 'interpolation', 'extrapolation']
+# probe:
+#   # hidden_dim: [0, 14, 21, 28, 33, 47, 75, 103, 131,  243, 467, 915 , 1811, 3603]
+#   # hidden_dim: [0, 191, 197, 209, 233, 281, 377, 569, 953, 1721, 3257]
+
+#   lr: [0.0002]
+#   # weight_decay: [0.0]
+#   # use_norm: [False]
+#   # use_dropout: [False]
+
+train_run_id: [0,1,2]

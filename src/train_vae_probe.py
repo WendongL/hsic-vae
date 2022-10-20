@@ -30,7 +30,7 @@ def run(params):
     for folder in folders:
         # print(f'[{str(params.vae.exp_params.kld_weight)}] in [{folder}] -- {str(params.vae.exp_params.kld_weight) in folder}')
         if str(params.vae.exp_params.kld_weight) in folder and params.vae.model_params.recons_type in folder :
-            params.representation_dataset_path = folder + '/0/mpi3d_vae_pretrained_dataset'
+            params.representation_dataset_path = folder + '/0/'+params.dataset+'_vae_pretrained_dataset'
             print(f'load data from: {params.representation_dataset_path}')
     # pdb.set_trace()
     device = 'cuda'  # cuda or cpu

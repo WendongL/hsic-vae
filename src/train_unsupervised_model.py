@@ -147,12 +147,12 @@ def run(params):
         pin_memory=len(config.trainer_params.gpus) != 0)
 
     data.setup()
-    savename = params.out_dir + f'/{params.dataset}_{params.model_type}_{params.name}'
+    savename = params.out_dir + f'/{params.dataset}_{params.variant}_{params.model_type}_{params.name}'
     checkpoint_path = savename + '.pt'
     runner = Trainer(logger=tb_logger,
                     callbacks=[
                         LearningRateMonitor(),
-                        ModelCheckpoint(save_top_k=2, 
+                        ModelCheckpoint(save_top_k=2,
                                         dirpath =os.path.join(tb_logger.log_dir , "checkpoints"), 
                                         monitor= "val_loss",
                                         save_last= True),

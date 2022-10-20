@@ -207,9 +207,9 @@ class SmallHsicBetaVAE(BaseVAE):
             inputs = flat(inputs)
             feats = flat(feats)
             outputs = flat(outputs)
-            inputs = inputs.detach()
-            feats = feats.detach()
-            outputs = outputs.detach()
+            # inputs = inputs.detach()
+            # feats = feats.detach()
+            # outputs = outputs.detach()
             hsic_score += HSIC(feats, inputs - outputs, s_x* self.latent_dim, s_y* self.latent_dim, no_grad = False)
         hsic_score /= num_sample_reparam
         return hsic_score

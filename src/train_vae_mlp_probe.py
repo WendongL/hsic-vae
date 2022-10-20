@@ -1,4 +1,7 @@
 import sys
+import os
+os.environ['CUDA_LAUNCH_BLOCKING'] = "1"
+
 # sys.path.insert(0, './../src')
 sys.path.insert(0, './../')
 from liftoff import parse_opts
@@ -22,7 +25,7 @@ import timm
 import torch
 import pickle
 import json
-import os
+
 import pdb
 
 def run(params):
@@ -32,8 +35,8 @@ def run(params):
         print('WARNING: converting from hidden_multiplier to hidden_dim')
         # map from multiplier to hidden dim
         mult = [0, 2 , 4 , 8 , 12 , 16 , 32 , 64 , 128, 256 , 512 ]
-        # hdim = [0, 33, 47, 75, 103, 131, 243, 467, 915, 1811, 3603]
-        hdim = [243]
+        hdim = [0, 33, 47, 75, 103, 131, 243, 467, 915, 1811, 3603]
+        
         m = params.probe.hidden_multiplier
         if m in mult:
             params.probe.hidden_dim = hdim[ mult.index(m) ]
@@ -75,16 +78,17 @@ def run(params):
         import glob
         folders = glob.glob(params.vae_representation_dataset_path + '/*')
         for folder in folders:
-            print(f'[{str(params.vae.exp_params.kld_weight)}] in [{folder}] -- {str(params.vae.exp_params.kld_weight) in folder}')
-            if ( ('kld_weight_' + str(params.vae.exp_params.kld_weight) + '_' in folder 
-                        or (int(params.vae.exp_params.kld_weight) >= 1 
-                        and 'kld_weight_' + str(int(params.vae.exp_params.kld_weight)) + '_' in folder) )
-                    and params.vae.model_params.model_type in folder
-                    and params.vae.model_params.recons_type in folder
-                    and 'LR_'+str(params.vae.exp_params.LR) + '_'  in folder) :
-                # params.representation_dataset_path = folder + f'/{params.run_id}/mpi3d_vae_pretrained_dataset'
-                # TODO: multiple probes runs use the same model
-                params.representation_dataset_path = folder + f'/{0}/{params.dataset}_vae_pretrained_dataset'
+            # print(f'[{str(params.vae.exp_params.kld_weight)}] in [{folder}] -- {str(params.vae.exp_params.kld_weight) in folder}')
+            # if ( ('kld_weight_' + str(params.vae.exp_params.kld_weight) + '_' in folder 
+            #             or (int(params.vae.exp_params.kld_weight) >= 1 
+            #             and 'kld_weight_' + str(int(params.vae.exp_params.kld_weight)) + '_' in folder) )
+            #         and params.vae.model_params.model_type in folder
+            #         and params.vae.model_params.recons_type in folder
+            #         and 'LR_'+str(params.vae.exp_params.LR) + '_'  in folder) :
+            #     # params.representation_dataset_path = folder + f'/{params.run_id}/mpi3d_vae_pretrained_dataset'
+            #     # TODO: multiple probes runs use the same model
+            if "alpha_"+str(params.vae.exp_params.alpha) in folder and params.variant in folder:
+                params.representation_dataset_path = folder + f'/{params.train_run_id}/{params.dataset}_{params.variant}_vae_pretrained_dataset'
                 print(f'load data from: {params.representation_dataset_path}')
     
     number_of_channels = 1 if params.dataset == 'dsprites' else 3
@@ -94,7 +98,8 @@ def run(params):
         dataloader_train = load_dataset.load_representation_dataset(
             dataset_name=params.dataset,  # datasets are dsprites, shapes3d and mpi3d
             variant=params.variant,
-            mode='train_without_val',
+            # mode='train_without_val',
+            mode = 'train',
             dataset_path=params.representation_dataset_path, 
             batch_size=params.probe.batch_size, 
             num_workers=params.num_workers,

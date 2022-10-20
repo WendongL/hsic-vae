@@ -1,7 +1,7 @@
 import torch.nn as nn
 import torch.nn.functional as F
 import torch
-import rff
+# import rff
 import numpy as np
 import pdb
 

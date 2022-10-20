@@ -7,4 +7,4 @@ echo $CONDA_PREFIX
 module load cuda/11.3
 python --version
 cd /home/wliang/Github/loss_capacity/src/
-liftoff train_unsupervised_model.py ./results/2022Oct19-142016_dsprites_hsicbetavae_3s/ --gpus 0 --per-gpu 1 --procs-no 1 --results-path results
+liftoff train_vae_mlp_probe.py ./results/2022Oct19-160510_vae_probes_mlp/ --gpus 0 --per-gpu 1 --procs-no 1 --results-path results
