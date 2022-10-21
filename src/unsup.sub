@@ -12,9 +12,9 @@ request_memory = 32000
 #request_disk = 12G
 request_cpus = 4
 request_gpus = 1
-requirements = TARGET.CUDACapability < 8.0 
+#requirements = TARGET.CUDACapability < 8.0 
 
-queue 90
+queue 2
 
 # this will start 10 virtual machines, each with 4 GPUs and 12 CPUs
 #  using these 4 GPUs and 12 CPUs the start_liftoff script will lounch 4 x 8 = 32 proceeses

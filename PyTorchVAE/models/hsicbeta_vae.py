@@ -1,3 +1,4 @@
+from numpy import imag
 import torch
 from PyTorchVAE.models import BaseVAE
 from torch import bernoulli, nn
@@ -5,7 +6,72 @@ from torch.nn import functional as F
 from .types_ import *
 import pdb
 from loss_capacity.functions import HSIC, HSIC_
-from loss_capacity.utils import hsic_batch, hsic_batch_v2
+from loss_capacity.utils import calc_med_sigma
+
+def hsic_reg(self, images, s_x=1, s_y=1, device='cuda', num_sample_reparam = 1, med_sigma= True):
+            # num_sample_reparam: num of samples of reparamatrizing z using mu and sigma
+            # med_sigma: choose the sigma of x as the median of 1/2(x_i-x_j)^2, same for y.
+    flat = torch.nn.Flatten()
+    hsic_score = 0
+
+    width_feats_acc = []
+    width_residual_acc = []
+    for i in range(num_sample_reparam):
+        inputs = images.to(device)
+        feats = self.encode(inputs).to(device)
+        outputs = self.decode(feats).to(device)
+        inputs = flat(inputs)
+        feats = flat(feats)
+        outputs = flat(outputs)
+        residual = inputs - outputs
+        if med_sigma:
+            width_feats = calc_med_sigma(feats)
+            width_residual = calc_med_sigma(residual)
+        else:
+            width_feats = s_x* self.latent_dim
+            width_residual = s_y* self.latent_dim
+        width_feats_acc.append(width_feats)
+        width_residual_acc.append(width_residual)
+        hsic_score += HSIC(feats, residual, width_feats, width_residual, no_grad = False)
+    hsic_score /= num_sample_reparam
+    width_feats_avg = torch.mean(torch.Tensor(width_feats_acc))
+    width_residual_avg = torch.mean(torch.Tensor(width_residual_acc))
+
+    return hsic_score, width_feats_avg, width_residual_avg
+def hsic_reg_v2(self, images, s_x=1, s_y=1, device='cuda', num_sample_reparam = 1, med_sigma= True):
+    # correspond to utils.hsic_batch_v2
+    # num_sample_reparam: num of samples of reparamatrizing z using mu and sigma
+    flat = torch.nn.Flatten(start_dim=-3, end_dim=-1)
+    batch_size = images.shape[0]
+    # print('images', images.shape)
+
+    inputs = images.to(device)
+    feats = torch.zeros(batch_size, num_sample_reparam, self.latent_dim)
+    outputs = torch.zeros(batch_size, num_sample_reparam, inputs.shape[1], inputs.shape[2], inputs.shape[3])
+    # print('outputs',outputs.shape)
+    # pdb.set_trace()
+    feats = feats.to(device)
+    outputs = outputs.to(device)
+    for i in range(num_sample_reparam):
+        feats[:, i, :] = self.encode(inputs)
+        # print('outputs[:, i, :, :]',outputs[:, i, :, :].shape)
+        # print('experiment.model.decode(torch.squeeze(feats[:, i, :]))',experiment.model.decode(torch.squeeze(feats[:, i, :])).shape)
+        outputs[:, i, :, :, :] = self.decode(feats[:, i, :])##########
+    
+    # pdb.set_trace()
+    inputs = inputs.unsqueeze(1).repeat(1, num_sample_reparam, 1, 1, 1) # repeat batch_size times H
+    inputs = flat(inputs)
+    outputs = flat(outputs)
+    residual = inputs - outputs
+    if med_sigma:
+        width_feats = calc_med_sigma(feats)
+        width_residual = calc_med_sigma(residual)
+    else:
+        width_feats = s_x* self.latent_dim
+        width_residual = s_y* self.latent_dim
+    hsic_score = HSIC_(feats, residual,  width_feats, width_residual, no_grad = False)
+    return hsic_score, width_feats, width_residual
+
 
 class SmallHsicBetaVAE(BaseVAE):
 
@@ -33,7 +99,8 @@ class SmallHsicBetaVAE(BaseVAE):
         self.C_max = torch.Tensor([max_capacity])
         self.C_stop_iter = Capacity_max_iter
         self.recons_type = recons_type
-
+        self.hsic_reg = hsic_reg
+        self.hsic_reg_v2 = hsic_reg_v2
         # Build Encoder
         self.encoder = nn.Sequential(
             nn.Conv2d(in_channels=in_channels,  out_channels=32, kernel_size=4, stride=2, padding=2), nn.ReLU(inplace=True),
@@ -159,15 +226,22 @@ class SmallHsicBetaVAE(BaseVAE):
         s_y = kwargs['s_y']
         num_sample_reparam = kwargs['num_sample_reparam']
         hsic_reg_version = kwargs['hsic_reg_version']
+        only_hsic = kwargs['only_hsic']
+        med_sigma = kwargs['med_sigma']
 
         reduction = 'sum'
         l2_loss = F.mse_loss(recons, input, reduction=reduction)
+        print(f'recons values: {recons.min()} - {recons.max()}')
+        print('input', input)
+        if recons.max() > 1.0 or recons.min() < 0.0:
+            print(f'Warning recons values out of range: {recons.min()} - {recons.max()}')
+            recons = torch.clip(recons, 0.0, 1.0)
         bce_loss =  F.binary_cross_entropy(recons, input,reduction=reduction)
 
         if hsic_reg_version == 'v1':
-            hsic_loss = self.hsic_reg(input,s_x = s_x, s_y = s_y, num_sample_reparam = num_sample_reparam)
+            hsic_loss, width_feats, width_residual = self.hsic_reg(self, input,s_x = s_x, s_y = s_y, num_sample_reparam = num_sample_reparam, med_sigma=med_sigma)
         elif hsic_reg_version == 'v2':
-            hsic_loss = self.hsic_reg_v2(input,s_x = s_x, s_y = s_y, num_sample_reparam = num_sample_reparam)
+            hsic_loss, width_feats, width_residual = self.hsic_reg_v2(self, input,s_x = s_x, s_y = s_y, num_sample_reparam = num_sample_reparam, med_sigma=med_sigma)
         
         if self.recons_type == 'l2':
             recons_loss = l2_loss
@@ -177,75 +251,34 @@ class SmallHsicBetaVAE(BaseVAE):
             print('select recons_type from: l2 or bce')
         kld_loss = torch.mean(-0.5 * torch.sum(1 + log_var - mu ** 2 - log_var.exp(), dim = 1), dim = 0)
 
+
+        if only_hsic:
+            loss = self.alpha * hsic_loss
+        else: 
+            loss = recons_loss + self.alpha * hsic_loss
+
         if self.loss_type == 'H': # https://openreview.net/forum?id=Sy2fzU9gl
-            loss = recons_loss + self.beta * kld_weight * kld_loss + self.alpha * hsic_loss
+            loss = loss + self.beta * kld_weight * kld_loss 
         elif self.loss_type == 'B': # https://arxiv.org/pdf/1804.03599.pdf
             self.C_max = self.C_max.to(input.device)
             C = torch.clamp(self.C_max/self.C_stop_iter * self.num_iter, 0, self.C_max.data[0])
-            loss = recons_loss + self.gamma * kld_weight* (kld_loss - C).abs() + self.alpha * hsic_loss
+            loss = loss + self.gamma * kld_weight* (kld_loss - C).abs() 
             # loss = recons_loss + self.gamma * kld_weight* (kld_loss - C).abs() 
         else:
             raise ValueError('Undefined loss type.')
-        # torch.cuda.empty_cache()
+        
+        torch.cuda.empty_cache()
         # print('done')
         return {'loss': loss, 
             'Reconstruction_Loss':recons_loss, 
             'KLD':kld_loss,
             'l2_loss' : l2_loss,
             'bce_loss' : bce_loss,
-            'hsic_loss' : hsic_loss
+            'hsic_loss' : hsic_loss,
+            'width_feats' : width_feats,
+            'width_residual' : width_residual
             }
 
-    def hsic_reg(self, images, s_x=1, s_y=1, device='cuda', num_sample_reparam = 1):
-                # num_sample_reparam: num of times of reparametrization.
-        flat = torch.nn.Flatten()
-        hsic_score = 0
-        for i in range(num_sample_reparam):
-            inputs = images.to(device)
-            feats = self.encode(inputs).to(device)
-            outputs = self.decode(feats).to(device)
-            inputs = flat(inputs)
-            feats = flat(feats)
-            outputs = flat(outputs)
-            # inputs = inputs.detach()
-            # feats = feats.detach()
-            # outputs = outputs.detach()
-            hsic_score += HSIC(feats, inputs - outputs, s_x* self.latent_dim, s_y* self.latent_dim, no_grad = False)
-        hsic_score /= num_sample_reparam
-        return hsic_score
-
-    def hsic_reg_v2(self, images, s_x=1, s_y=1, device='cuda', num_sample_reparam = 1):
-        # correspond to utils.hsic_batch_v2
-        # num_sample_reparam: num of samples of reparamatrizing z using mu and sigma
-        flat = torch.nn.Flatten(start_dim=-3, end_dim=-1)
-        batch_size = images.shape[0]
-        # print('images', images.shape)
-
-        inputs = images.to(device)
-        feats = torch.zeros(batch_size, num_sample_reparam, self.latent_dim)
-        outputs = torch.zeros(batch_size, num_sample_reparam, inputs.shape[1], inputs.shape[2], inputs.shape[3])
-        # print('outputs',outputs.shape)
-        # pdb.set_trace()
-        feats = feats.to(device)
-        outputs = outputs.to(device)
-        for i in range(num_sample_reparam):
-            feats[:, i, :] = self.encode(inputs)
-            # print('outputs[:, i, :, :]',outputs[:, i, :, :].shape)
-            # print('experiment.model.decode(torch.squeeze(feats[:, i, :]))',experiment.model.decode(torch.squeeze(feats[:, i, :])).shape)
-            outputs[:, i, :, :, :] = self.decode(feats[:, i, :])##########
-        
-        # pdb.set_trace()
-        inputs = inputs.unsqueeze(1).repeat(1, num_sample_reparam, 1, 1, 1) # repeat batch_size times H
-        inputs = flat(inputs)
-        outputs = flat(outputs)
-        inputs = inputs.detach()
-        feats = feats.detach()
-        outputs = outputs.detach()
-        
-        
-        hsic_score = HSIC_(feats, inputs - outputs, s_x, s_y, no_grad = False)
-
-        return hsic_score
     def sample(self,
                num_samples:int,
                current_device: int, **kwargs) -> Tensor:
@@ -324,6 +357,9 @@ class HsicBetaVAE(BaseVAE):
         self.C_stop_iter = Capacity_max_iter
         self.recons_type = recons_type
         self.input_channels = in_channels
+        self.hsic_reg = hsic_reg
+        self.hsic_reg_v2 = hsic_reg_v2
+
         modules = []
         if hidden_dims is None:
             hidden_dims = [32, 64, 128, 256, 512]
@@ -441,14 +477,16 @@ class HsicBetaVAE(BaseVAE):
         s_x = kwargs['s_x']
         s_y = kwargs['s_y']
         num_sample_reparam = kwargs['num_sample_reparam']
+        hsic_reg_version = kwargs['hsic_reg_version']
+        only_hsic = kwargs['only_hsic']
 
         reduction = 'sum'
         l2_loss = F.mse_loss(recons, input, reduction=reduction)
         bce_loss =  F.binary_cross_entropy(recons, input,reduction=reduction)
         if hsic_reg_version == 'v1':
-            hsic_loss = self.hsic_reg(input,s_x = s_x, s_y = s_y, num_sample_reparam = num_sample_reparam)
+            hsic_loss, width_feats, width_residual = self.hsic_reg(self, input,s_x = s_x, s_y = s_y, num_sample_reparam = num_sample_reparam)
         elif hsic_reg_version == 'v3':
-            hsic_loss = self.hsic_reg_v3(input,s_x = s_x, s_y = s_y, num_sample_reparam = num_sample_reparam)
+            hsic_loss, width_feats, width_residual = self.hsic_reg_v3(self, input,s_x = s_x, s_y = s_y, num_sample_reparam = num_sample_reparam)
         
         if self.recons_type == 'l2':
             recons_loss = l2_loss
@@ -458,12 +496,18 @@ class HsicBetaVAE(BaseVAE):
             print('select recons_type from: l2 or bce')
         kld_loss = torch.mean(-0.5 * torch.sum(1 + log_var - mu ** 2 - log_var.exp(), dim = 1), dim = 0)
 
+        if only_hsic:
+            loss = self.alpha * hsic_loss
+        else: 
+            loss = recons_loss + self.alpha * hsic_loss
+
         if self.loss_type == 'H': # https://openreview.net/forum?id=Sy2fzU9gl
-            loss = recons_loss + self.beta * kld_weight * kld_loss + self.alpha * hsic_loss
+            loss = loss + self.beta * kld_weight * kld_loss 
         elif self.loss_type == 'B': # https://arxiv.org/pdf/1804.03599.pdf
             self.C_max = self.C_max.to(input.device)
             C = torch.clamp(self.C_max/self.C_stop_iter * self.num_iter, 0, self.C_max.data[0])
-            loss = recons_loss + self.gamma * kld_weight* (kld_loss - C).abs() + self.alpha * hsic_loss
+            loss = loss + self.gamma * kld_weight* (kld_loss - C).abs() 
+            # loss = recons_loss + self.gamma * kld_weight* (kld_loss - C).abs() 
         else:
             raise ValueError('Undefined loss type.')
         
@@ -472,58 +516,12 @@ class HsicBetaVAE(BaseVAE):
             'KLD':kld_loss,
             'l2_loss' : l2_loss,
             'bce_loss' : bce_loss,
-            'hsic_loss' : hsic_loss
+            'hsic_loss' : hsic_loss,
+            'width_feats' : width_feats,
+            'width_residual' : width_residual
             }
 
-    def hsic_reg(self, images, s_x=1, s_y=1, device='cuda', num_sample_reparam = 1):
-                # num_sample_reparam: num of samples of reparamatrizing z using mu and sigma
-        flat = torch.nn.Flatten()
-        hsic_score = 0
-        for i in range(num_sample_reparam):
-            inputs = images.to(device)
-            feats = self.encode(inputs).to(device)
-            outputs = self.decode(feats).to(device)
-            inputs = flat(inputs)
-            feats = flat(feats)
-            outputs = flat(outputs)
-            inputs = inputs.detach()
-            feats = feats.detach()
-            outputs = outputs.detach()
-            hsic_score += HSIC(feats, inputs - outputs, s_x* self.latent_dim, s_y* self.latent_dim, no_grad = False)
-        hsic_score /= num_sample_reparam
-        return hsic_score
-    def hsic_reg_v2(self, images, s_x=1, s_y=1, device='cuda', num_sample_reparam = 1):
-        # correspond to utils.hsic_batch_v2
-        # num_sample_reparam: num of samples of reparamatrizing z using mu and sigma
-        flat = torch.nn.Flatten(start_dim=-3, end_dim=-1)
-        batch_size = images.shape[0]
-        # print('images', images.shape)
-
-        inputs = images.to(device)
-        feats = torch.zeros(batch_size, num_sample_reparam, self.latent_dim)
-        outputs = torch.zeros(batch_size, num_sample_reparam, inputs.shape[1], inputs.shape[2], inputs.shape[3])
-        # print('outputs',outputs.shape)
-        # pdb.set_trace()
-        feats = feats.to(device)
-        outputs = outputs.to(device)
-        for i in range(num_sample_reparam):
-            feats[:, i, :] = self.encode(inputs)
-            # print('outputs[:, i, :, :]',outputs[:, i, :, :].shape)
-            # print('experiment.model.decode(torch.squeeze(feats[:, i, :]))',experiment.model.decode(torch.squeeze(feats[:, i, :])).shape)
-            outputs[:, i, :, :, :] = self.decode(feats[:, i, :])##########
-        
-        # pdb.set_trace()
-        inputs = inputs.unsqueeze(1).repeat(1, num_sample_reparam, 1, 1, 1) # repeat batch_size times H
-        inputs = flat(inputs)
-        outputs = flat(outputs)
-        inputs = inputs.detach()
-        feats = feats.detach()
-        outputs = outputs.detach()
-        
-        
-        hsic_score = HSIC_(feats, inputs - outputs, s_x, s_y, no_grad = False)
-
-        return hsic_score
+    
         
     def sample(self,
                num_samples:int,

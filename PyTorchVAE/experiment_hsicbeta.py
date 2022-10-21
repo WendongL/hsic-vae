@@ -31,7 +31,8 @@ class VAEXperiment_hsicbeta(pl.LightningModule):
         self.s_y = self.params.s_y if hasattr(self.params, 's_y') else 1
         self.num_samples_hisc = self.params.num_samples_hisc if hasattr(self.params, 'num_samples_hisc') else 512
         self.num_sample_reparam = self.params.num_sample_reparam if hasattr(self.params, 'num_sample_reparam') else 1
-        
+        self.only_hsic = self.params.vae.exp_params.only_hsic if hasattr(self.params, 'vae.exp_params.only_hsic') else False
+        self.med_sigma = self.params.vae.exp_params.med_sigma if hasattr(self.params, 'vae.exp_params.only_hsic') else True
         try:
             self.hold_graph = self.params.retain_first_backpass
         except:
@@ -49,11 +50,12 @@ class VAEXperiment_hsicbeta(pl.LightningModule):
                 M_N = self.params.kld_weight, #al_img.shape[0]/ self.num_train_imgs,
                 optimizer_idx=optimizer_idx,
                 batch_idx = batch_idx,
-                loss_type='l2',
                 s_x = self.s_x,
                 s_y = self.s_y,
                 num_sample_reparam = self.num_sample_reparam,
-                hsic_reg_version = self.params.hsic_reg_version
+                hsic_reg_version = self.params.hsic_reg_version,
+                only_hsic = self.only_hsic,
+                med_sigma = self.med_sigma
                 )
 
         self.log_dict({key: val.item() for key, val in train_loss.items()}, sync_dist=True)
@@ -68,11 +70,12 @@ class VAEXperiment_hsicbeta(pl.LightningModule):
                 M_N = 1.0, #real_img.shape[0]/ self.num_val_imgs,
                 optimizer_idx = optimizer_idx,
                 batch_idx = batch_idx,
-                loss_type='l2',
                 s_x = self.s_x,
                 s_y = self.s_y,
                 num_sample_reparam = self.num_sample_reparam,
-                hsic_reg_version = self.params.hsic_reg_version
+                hsic_reg_version = self.params.hsic_reg_version,
+                only_hsic = self.only_hsic,
+                med_sigma = self.med_sigma
                 )
         # if self.hsic_every_epoch:
         #     hsic_score = hsic_batch(real_img, self, s_x=self.s_x * self.model.latent_dim, s_y=self.s_y * self.model.latent_dim, device='cuda', batch_size=512)
@@ -95,11 +98,12 @@ class VAEXperiment_hsicbeta(pl.LightningModule):
                 M_N = 1.0, #real_img.shape[0]/ self.num_val_imgs,
                 optimizer_idx = optimizer_idx,
                 batch_idx = batch_idx,
-                loss_type='l2',
                 s_x = self.s_x,
                 s_y = self.s_y,
                 num_sample_reparam = self.num_sample_reparam,
-                hsic_reg_version = self.params.hsic_reg_version
+                hsic_reg_version = self.params.hsic_reg_version,
+                only_hsic = self.only_hsic,
+                med_sigma = self.med_sigma
                 )
 
         self.log_dict({f"test_{key}": val.item() for key, val in val_loss.items()}, sync_dist=True)

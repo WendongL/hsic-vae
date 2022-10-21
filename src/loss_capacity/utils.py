@@ -270,8 +270,8 @@ class MetricsPytorch:
         return scores_d
         
 ### calculate HSIC for trained model checkpoints
-def hsic_batch(real_img, experiment, s_x=1, s_y=1, device='cuda', batch_size=512,
-                num_sample_reparam = 1, no_grad = True):
+def hsic_batch(real_img, experiment, s_x=1, s_y=1, device='cuda', 
+                num_sample_reparam = 1, no_grad = True, med_sigma= True):
             # num_sample_reparam: num of samples of reparamatrizing z using mu and sigma
     experiment.model.to(device)
     flat = torch.nn.Flatten() # flatten dim: from 1 to -1
@@ -287,13 +287,18 @@ def hsic_batch(real_img, experiment, s_x=1, s_y=1, device='cuda', batch_size=512
         inputs = inputs.detach()
         feats = feats.detach()
         outputs = outputs.detach()
-
-        hsic_score += HSIC(feats, inputs - outputs, s_x, s_y, no_grad = no_grad)
+        residual = inputs - outputs
+        if med_sigma:
+            width_feats = calc_med_sigma(feats)
+            width_residual = calc_med_sigma(residual)
+            hsic_score += HSIC(feats, residual, width_feats, width_residual, no_grad = False)
+        else:
+            hsic_score += HSIC(feats, residual, s_x, s_y, no_grad = False)
     hsic_score /= num_sample_reparam
     return hsic_score
 
 def hsic_batch_v2(real_img, experiment, s_x=1, s_y=1, device='cuda',
-                num_sample_reparam = 1, no_grad = True):
+                num_sample_reparam = 1, no_grad = True, med_sigma= True):
             # calculate HSIC(Z(X), X-dec(Z(X)))
             # num_sample_reparam: num of samples of reparamatrizing z using mu and sigma
             # num_sample_reparam is thus the dimension of the kernels of HSIC.
@@ -323,14 +328,17 @@ def hsic_batch_v2(real_img, experiment, s_x=1, s_y=1, device='cuda',
     inputs = inputs.detach()
     feats = feats.detach()
     outputs = outputs.detach()
-    
-    
-    hsic_score = HSIC_(feats, inputs - outputs, s_x, s_y, no_grad = no_grad)
-
+    residual = inputs - outputs
+    if med_sigma:
+        width_feats = calc_med_sigma(feats)
+        width_residual = calc_med_sigma(residual)
+        hsic_score = HSIC_(feats, residual,  width_feats, width_residual, no_grad = False)
+    else:
+        hsic_score += HSIC(feats, residual, s_x, s_y, no_grad = False)
     return hsic_score
 
 def hsic_v3(real_img, experiment, s_x=1, s_y=1, device='cuda',
-                num_sample_reparam = 1, no_grad = True, threshold = False):
+                num_sample_reparam = 1, no_grad = True, threshold = False, med_sigma= True):
             # calculate HSIC(Z(X), X-dec(Z(X)))
             # num_sample_reparam: num of samples of reparamatrizing z using mu and sigma
             # num_sample_reparam is thus the dimension of the kernels of HSIC.
@@ -361,14 +369,18 @@ def hsic_v3(real_img, experiment, s_x=1, s_y=1, device='cuda',
     inputs = inputs.detach()
     feats = feats.detach()
     outputs = outputs.detach()
+    residual = inputs - outputs
+    if med_sigma:
+        s_x = calc_med_sigma(feats)
+        s_y = calc_med_sigma(residual)
     
     if threshold:
         feats = feats.cpu().numpy()
         inputs = inputs.cpu().numpy()
         outputs = outputs.cpu().numpy()
-        hsic_score = hsic_gam(feats, inputs - outputs, s_x, s_y)
+        hsic_score = hsic_gam(feats, residual, s_x, s_y)
     else:
-        hsic_score = HSIC(feats, inputs - outputs, s_x, s_y, no_grad = no_grad)
+        hsic_score = HSIC(feats, residual, s_x, s_y, no_grad = no_grad)
 
     return hsic_score # if threshold, hsic_score is 2-dimension.
 
@@ -409,6 +421,24 @@ def hsic_batch_v2_comp(a, experiment, s_x=1, s_y=1, device='cuda',
 
     return hsic_score
 
+def calc_med_sigma(X):
+    # X is a tensor with row - sample, col - dim
+	# auto choose median to be the kernel width
+    n = X.shape[0]
+
+	# ----- width of X -----
+    Xmed = X
+
+    G = torch.sum(Xmed*Xmed, 1).reshape(n,1)
+    Q = torch.tile(G, (1, n) )
+    R = torch.tile(G.T, (n, 1) )
+
+    dists = Q + R - 2* torch.matmul(Xmed, Xmed.T)
+    dists = dists - torch.tril(dists)
+    dists = dists.reshape(n**2, 1)
+
+    width_x = torch.sqrt( 0.5 * torch.median(dists[dists>0]) )
+    return width_x
 
 def from_pickle(path): # load something
     thing = None
