@@ -1,4 +1,4 @@
-# loss_capacity
+# hsic-vae
 
 
 ### install dependencies
